@@ -18,6 +18,8 @@
   "homepage": "https://github.com/Luckny/nodejs-realworld-sample#readme",
   "dependencies": {
     "express": "^4.17.2",
-    "mongoose": "^6.1.5"
+    "mongoose": "^6.1.5",
+    "passport": "^0.5.2",
+    "passport-local-mongoose": "^6.1.0"
   }
 }

@@ -6,14 +6,17 @@ const userSchema = new Schema({
 
     token: {
         type: String,
+        required: true
     },
 
     email: {
         type: String,
+        required: true,
+        unique: true
     },
     bio: {
         type: String,
-        default: 'No Bio.'
+        default: ''
     },
 
     image: {

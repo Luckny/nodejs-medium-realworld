@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const articleSchema = new Schema({
     slug: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     title: {
         type: String,
@@ -12,24 +13,11 @@ const articleSchema = new Schema({
     },
     description: {
         type: String,
-        required: true
     },
     body: {
         type: String,
-        required: true
     },
     tagList: [String],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date
-    },
-    favorited: {
-        type: Boolean,
-        default: false
-    },
     favoritesCount: {
         type: Number,
         default: 0
@@ -37,9 +25,13 @@ const articleSchema = new Schema({
     author: {
         type: Schema.Types.ObjectId,
         ref: 'Profile'
-    }
+    },
+    comments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Comment'
+    }]
 
-})
+}, { timestamps: true })
 
 const Article = mongoose.model('Article', articleSchema);
 

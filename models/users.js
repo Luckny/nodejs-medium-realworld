@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 const passportLocalMongoose = require('passport-local-mongoose')
 
 const userSchema = new Schema({
-
     token: {
         type: String,
         required: true
@@ -22,7 +21,15 @@ const userSchema = new Schema({
     image: {
         type: String,
         default: null
-    }
+    },
+    favorites: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Article'
+    }],
+    following: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 
 })
 

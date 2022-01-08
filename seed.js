@@ -43,4 +43,11 @@ const makeEverything = async () => {
 }
 
 
-makeEverything();
+//makeEverything();
+
+const update = async () => {
+    const res = await Article.updateOne({ title: 'this is a lot' }, { body: 'i have been updated lol' });
+    console.log(res)
+}
+
+update()

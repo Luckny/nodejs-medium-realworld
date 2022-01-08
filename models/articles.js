@@ -13,9 +13,11 @@ const articleSchema = new Schema({
     },
     description: {
         type: String,
+        default: '';
     },
     body: {
         type: String,
+        default: ''
     },
     tagList: [String],
     favoritesCount: {

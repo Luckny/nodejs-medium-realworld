@@ -1,9 +1,13 @@
-export const User = require('./users');
-export const Profile = require('./profile');
-export const Article = require('./article');
-export const Comment = require('./comment');
-export const Tag = require('./tags');
+const User = require('./users');
+const Profile = require('./profile');
+const Article = require('./articles');
+const Comment = require('./comment');
+const Tag = require('./tags');
 
+
+module.exports = {
+    User, Profile, Article, Comment, Tag
+}
 
 
 

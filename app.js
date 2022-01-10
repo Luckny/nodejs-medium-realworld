@@ -1,5 +1,5 @@
+require('dotenv').config(); //to use .env variables
 const express = require('express');
-const { User } = require('./models')
 const loaders = require('./loaders');
 const app = express();
 

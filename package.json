@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Luckny/nodejs-realworld-sample#readme",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "express": "^4.17.2",
     "mongoose": "^6.1.5",
     "passport": "^0.5.2",

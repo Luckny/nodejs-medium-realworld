@@ -3,7 +3,6 @@
  *      defined using the mongoose docs.
  *******************************************************************/
 const mongoose = require('mongoose');
-const mongoose = require('mongoose');
 
 const tagSchema = new mongoose.Schema({
     name: {

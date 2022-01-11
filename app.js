@@ -1,29 +1,48 @@
 require('dotenv').config(); //to use .env variables
 const express = require('express');
-const loaders = require('./loaders');
-const passport = require('passport');
-const strategy = require('./loaders/passport');
+const loaders = require('./loaders');//Contains the mongoose configuration
+const passport = require('passport');//For Authentification
+const strategy = require('./loaders/passport');//Contains the passport-jwt configuration logic
+const { User } = require('./models');//The User model.
+const { userRoutes } = require('./routes');//The Routes
+const { urlencoded } = require('express');
 const app = express();
+
+/******************************
+ *  APPLICATION MIDDLEWARES   *
+ ******************************/
+app.use(urlencoded({ extended: true }))
+app.use(express.json())
+//End MiddleWares.
 
 passport.use(strategy)
 
-async function startServer() {
+
+/**
+ * This function uses the mongoose config in the loaders/index to 
+ * Start the mongoose connection and then sets the listening port
+ * for the express application.
+ */
+async function startServer(port) {
 
 
     await loaders.init();
 
-    app.listen(3000, () => {
+    app.listen(port, () => {
         console.log('Serving on port 3000')
     })
 
 }
 
+/******************************
+ *          ROUTES            *
+ ******************************/
+app.use('/users', userRoutes)
 
-app.get('/user', passport.authenticate('jwt', { session: false }), (req, res) => {
-    res.send('since you are authenticated see this')
-})
+//End Routes.
 
 
-startServer();
+//Starts the Server
+startServer(3000);
 
 

@@ -13,7 +13,7 @@ const articleSchema = new Schema({
     },
     description: {
         type: String,
-        default: '';
+        default: ''
     },
     body: {
         type: String,

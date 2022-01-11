@@ -1,6 +1,7 @@
 
 const { User } = require('../models');//The User model.
-const bcrypt = require('bcrypt');//Hashing library.
+const { encrypt, genToken } = require('../config/utils');//Hashing library.
+
 
 /**
  * This function registers a new user
@@ -16,15 +17,21 @@ const bcrypt = require('bcrypt');//Hashing library.
  * @param {Object} res - The Response Object
  */
 module.exports.register = async (req, res) => {
-    const { username, email, password } = req.body.user;
-    await User.deleteOne({ username });//This is for testing purposes only, Delete line before pushing.
-    const newUser = new User({ username, email });
-    newUser.password = bcrypt.hashSync(password, 10);
-    await newUser.save();
-    const result = await User.findOne({ username });
-    console.log(result);//This is for testing purposes only, Delete line before pushing.
-    const user = (({ email, username, bio, image }) => ({ email, username, bio, image }))(result);
-    res.status(201).json({ user })
+    try {
+        const { username, email, password } = req.body.user;
+        const newUser = await encrypt(new User({ username, email }), password);
+        await newUser.save();
+        const result = await User.findOne({ username, email });
+        const token = genToken(result);
+        const user = (({ email, username, bio, image }) => ({ email, username, bio, image }))(result);
+        user.token = token;
+        res.status(201).json({ user });
+    } catch (e) {
+        console.log(e)
+        res.sendStatus(422)
+    }
+
+
 }
 
 

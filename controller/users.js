@@ -1,6 +1,6 @@
 
 const { User } = require('../models');//The User model.
-const { encrypt, genToken } = require('../config/utils');//Hashing library.
+const { hashPassword, genToken } = require('../config/utils');//Hashing library.
 
 
 /**
@@ -19,7 +19,7 @@ const { encrypt, genToken } = require('../config/utils');//Hashing library.
 module.exports.register = async (req, res) => {
     try {
         const { username, email, password } = req.body.user;
-        const newUser = await encrypt(new User({ username, email }), password);
+        const newUser = await hashPassword(new User({ username, email }), password);
         await newUser.save();
         const result = await User.findOne({ username, email });
         const token = genToken(result);

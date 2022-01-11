@@ -4,6 +4,7 @@ const config = require('./config');//Contains the mongoose configuration
 const passport = require('passport');//For Authentification
 const { User } = require('./models');//The User model.
 const { urlencoded } = require('express');
+const { userRoutes } = require('./routes');
 const app = express();
 
 /******************************
@@ -32,9 +33,12 @@ async function startServer(port) {
 }
 
 
+/******************************
+ *          ROUTES            *
+ ******************************/
+app.use('/users', userRoutes);
+
 
 
 //Starts the Server
 startServer(3000);
-
-

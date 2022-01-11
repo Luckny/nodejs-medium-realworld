@@ -1,24 +1,29 @@
+/**************************************************************************
+ *          THIS FILE HAS THE PASSPORT STRATEGIES CONFIGURATIONS          *
+ **************************************************************************/
+require('dotenv').config();
+const passport = require('passport');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const { User } = require('../models')
-require('dotenv').config();
+
 
 const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET
 }
 
-const strategy = new JwtStrategy(opts, (payload, done) => {
-    User.findOne({ id: payload.sub }, (err, user) => {
-        if (err) {
-            return done(err, false);
-        }
-        if (user) {
-            return done(null, user);
-        } else {
-            return done(null, false)
-        }
-    })
+const strategy = new JwtStrategy(opts, async (payload, done) => {
+    try {
+        const user = await User.findById(payload.id);
+        return done(null, user);
+    } catch (err) {
+        return done(err);
+    }
 })
 
-module.exports = strategy;
+
+passport.use(strategy)
+
+
+
 

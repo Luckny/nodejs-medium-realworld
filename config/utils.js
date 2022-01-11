@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
  *                 BCRYPT ENCRYPT AND DECRYPT           *
  ********************************************************/
 const bcrypt = require('bcrypt');
-module.exports.encrypt = async (User, password) => {
+module.exports.hashPassword = async (User, password) => {
     User.salt = await bcrypt.genSalt(10)
     User.password = await bcrypt.hash(password, User.salt);
     return User

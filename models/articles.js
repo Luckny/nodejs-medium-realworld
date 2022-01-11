@@ -1,3 +1,7 @@
+/*******************************************************************
+ *      This File Defines and exports the ARTICLE Schema which is 
+ *      defined using the mongoose docs.
+ *******************************************************************/
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -35,6 +39,7 @@ const articleSchema = new Schema({
 
 }, { timestamps: true })
 
+//Creating the Article model
 const Article = mongoose.model('Article', articleSchema);
 
 module.exports = Article;

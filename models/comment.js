@@ -1,5 +1,8 @@
+/*******************************************************************
+ *      This File Defines and exports the COMMENT Schema which is 
+ *      defined using the mongoose docs.
+ *******************************************************************/
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
 const commentSchema = new Schema({
@@ -17,5 +20,6 @@ const commentSchema = new Schema({
     }
 }, { timestamps: true })
 
+//Creating the Comment model.
 const Comment = mongoose.model('Comment', commentSchema);
 module.exports = Comment;

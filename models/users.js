@@ -1,3 +1,7 @@
+/*******************************************************************
+ *      This File Defines and exports the User Schema which is 
+ *      defined using the mongoose docs.
+ *******************************************************************/
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -24,7 +28,7 @@ const userSchema = new Schema({
 
     image: {
         type: String,
-        default: null
+        default: ''
     },
     favorites: [{
         type: Schema.Types.ObjectId,
@@ -37,5 +41,6 @@ const userSchema = new Schema({
 
 })
 
+//Creating the User model
 const User = mongoose.model('User', userSchema);
 module.exports = User;

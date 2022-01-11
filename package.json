@@ -17,11 +17,13 @@
   },
   "homepage": "https://github.com/Luckny/nodejs-realworld-sample#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
     "mongoose": "^6.1.5",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
-    "passport-local-mongoose": "^6.1.0"
+    "passport-local-mongoose": "^6.1.0",
+    "router": "^1.3.6"
   }
 }

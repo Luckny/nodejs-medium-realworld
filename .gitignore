@@ -34,5 +34,5 @@ npm-debug.log
 .DS_Store
 
 
-Conduit.postman_collection
+Conduit.postman_collection.json
 .env

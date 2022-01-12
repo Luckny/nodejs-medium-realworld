@@ -1,6 +1,6 @@
 
 const { User } = require('../models');//The User model.
-const { hashPassword, genToken } = require('../config/utils');//Hashing library.
+const utils = require('../config/utils');//Hashing library.
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
 
@@ -22,13 +22,12 @@ module.exports.register = async (req, res) => {
     try {
         const { username, email, password } = req.body.user;
         await User.deleteOne({ username })//For testing purposes, delete line before pushing to git
-        const newUser = await hashPassword(new User({ username, email }), password);
+        const newUser = await utils.hashPassword(new User({ username, email }), password);
         await newUser.save();
         const result = await User.findOne({ username, email });
         console.log(result)//For testing purposes, delete line before pushing to git
-        const token = genToken(result);
         const user = (({ email, username, bio, image }) => ({ email, username, bio, image }))(result);
-        user.token = token;
+        user.token = utils.genToken(result).token;
         res.status(201).json({ user });
     } catch (e) {
         console.log(e)
@@ -40,8 +39,22 @@ module.exports.register = async (req, res) => {
 
 
 module.exports.login = async (req, res) => {
-    console.log(req.headers)
-    res.sendStatus(200)
+
+    try {
+        const { email, password } = req.body.user;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401);
+        }
+
+        await utils.verifyPassword(user, password);
+        console.log(email, password)
+        res.send('let me work bruv')
+    } catch (e) {
+
+    }
+
+
 }
 
 

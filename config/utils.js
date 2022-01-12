@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 
 /********************************************************
- *                 BCRYPT ENCRYPT AND DECRYPT           *
+ *                 BCRYPT HASH AND VERIFY           *
  ********************************************************/
 const bcrypt = require('bcrypt');
 module.exports.hashPassword = async (User, password) => {
@@ -15,10 +15,30 @@ module.exports.hashPassword = async (User, password) => {
     return User
 }
 
+module.exports.verifyPassword = async (User, password) => {
+    const match = await bcrypt.compare(password, User.password);
+    if (match) {
+        return console.log('it matches you dont need the salt bruv')
+    }
+    console.log('no match bro')
+}
+
 
 /*********************************
  *         GENERATE JWT          *
  *********************************/
 module.exports.genToken = (User) => {
-    return jwt.sign({ _id: User.id, username: User.username }, process.env.JWT_SECRET)
+    const _id = User._id;
+    const expiresIn = '1d';
+    const payload = {
+        sub: _id,
+        iat: Date.now()
+    };
+
+    const signedToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: expiresIn });
+
+    return {
+        token: "Token " + signedToken,
+        expires: expiresIn
+    }
 }

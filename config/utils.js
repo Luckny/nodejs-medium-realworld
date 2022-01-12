@@ -9,10 +9,10 @@ const jwt = require('jsonwebtoken');
  *                 BCRYPT HASH AND VERIFY           *
  ********************************************************/
 const bcrypt = require('bcrypt');
-module.exports.hashPassword = async (User, password) => {
+module.exports.hashPassword = async (password) => {
     salt = await bcrypt.genSalt(10)
-    User.password = await bcrypt.hash(password, salt);
-    return User
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
 }
 
 module.exports.verifyPassword = async (User, password) => {

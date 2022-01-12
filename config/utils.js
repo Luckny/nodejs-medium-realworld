@@ -34,7 +34,6 @@ module.exports.genToken = (User) => {
    });
 
    return {
-      token: 'Token ' + signedToken,
-      expires: expiresIn,
+      token: signedToken,
    };
 };

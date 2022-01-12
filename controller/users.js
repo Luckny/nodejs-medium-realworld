@@ -1,6 +1,8 @@
 
 const { User } = require('../models');//The User model.
 const { hashPassword, genToken } = require('../config/utils');//Hashing library.
+const passport = require('passport')
+const jwt = require('jsonwebtoken')
 
 
 /**
@@ -34,6 +36,12 @@ module.exports.register = async (req, res) => {
     }
 
 
+}
+
+
+module.exports.login = async (req, res) => {
+    console.log(req.headers)
+    res.sendStatus(200)
 }
 
 

@@ -11,8 +11,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 module.exports.hashPassword = async (password) => {
     salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt);
-    return hashedPassword;
+    return await bcrypt.hash(password, salt);
+
 }
 
 module.exports.verifyPassword = async (User, password) => {

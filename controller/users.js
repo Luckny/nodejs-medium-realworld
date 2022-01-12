@@ -1,5 +1,6 @@
 const { User } = require('../models'); //The User model.
 const utils = require('../config/utils'); //Hashing library.
+const { db } = require('../models/users');
 
 /**
  * This function registers a user with a hashed password and
@@ -11,16 +12,19 @@ module.exports.register = async (req, res) => {
    try {
       const { username, email, password } = req.body.user;
       const newUser = new User({ username, email });
+      await User.deleteMany({});
       newUser.password = await utils.hashPassword(password);
       await newUser.save();
       const user = await User.findOne({ username, email });
-      const { bio, image } = user;
-      const token = utils.genToken(user);
+      const { email: mail, username: name, bio, image } = user;
+      const token = utils.genToken(user).token;
       res.status(201).json({
-         user: { email, username, bio, image, token },
+         user: { mail, name, bio, image, token },
       });
    } catch (e) {
+      console.log(e);
       res.sendStatus(422);
+      //unknown server error 500
    }
 };
 
@@ -45,14 +49,15 @@ module.exports.login = async (req, res) => {
 
       if (valid) {
          const token = utils.genToken(dbUser);
-         const { username, bio, image } = dbUser;
+         const { email: mail, username, bio, image } = dbUser;
          res.status(200).json({
-            user: { email, username, bio, image, token },
+            user: { mail, username, bio, image, token },
          });
       } else {
          res.sendStatus(401);
       }
    } catch (e) {
+      console.log(e);
       res.sendStatus(422);
    }
 };

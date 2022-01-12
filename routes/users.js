@@ -6,7 +6,8 @@ const router = express.Router();//The Router library.
 /******************************
  *          ROUTES            *    
  ******************************/
-router.post('/', users.register)
+router.post('/users', users.register);
+router.post('/users/login', users.login)
 
 //End Routes
 

@@ -2,7 +2,6 @@ require('dotenv').config(); //to use .env variables
 const express = require('express');
 const mongoose = require('./config/mongoose');//Contains the mongoose configuration
 require('./config/passport')//For Authentification
-const { User } = require('./models');//The User model.
 const { urlencoded } = require('express');
 const { userRoutes } = require('./routes');
 const app = express();

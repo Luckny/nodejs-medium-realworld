@@ -1,6 +1,6 @@
 require('dotenv').config(); //to use .env variables
 const express = require('express');
-const config = require('./config');//Contains the mongoose configuration
+const mongoose = require('./config/mongoose');//Contains the mongoose configuration
 const passport = require('passport');//For Authentification
 const { User } = require('./models');//The User model.
 const { urlencoded } = require('express');
@@ -24,7 +24,7 @@ app.use(express.json())
 async function startServer(port) {
 
 
-    await config.init();
+    await mongoose.connectDb();
 
     app.listen(port, () => {
         console.log('Serving on port 3000')

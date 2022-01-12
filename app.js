@@ -36,7 +36,7 @@ async function startServer(port) {
 /******************************
  *          ROUTES            *
  ******************************/
-app.use('/users', userRoutes);
+app.use('/', userRoutes);
 
 
 

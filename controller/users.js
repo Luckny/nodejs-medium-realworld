@@ -19,21 +19,21 @@ const jwt = require('jsonwebtoken')
  * @param {Object} res - The Response Object
  */
 module.exports.register = async (req, res) => {
+
     try {
         const { username, email, password } = req.body.user;
         await User.deleteOne({ username })//For testing purposes, delete line before pushing to git
-        const newUser = await utils.hashPassword(new User({ username, email }), password);
+        const newUser = new User({ username, email });
+        newUser.password = await utils.hashPassword(password);
         await newUser.save();
-        const result = await User.findOne({ username, email });
-        console.log(result)//For testing purposes, delete line before pushing to git
-        const user = (({ email, username, bio, image }) => ({ email, username, bio, image }))(result);
-        user.token = utils.genToken(result).token;
-        res.status(201).json({ user });
+        const user = await User.findOne({ username, email });
+        console.log(user)//For testing purposes, delete line before pushing to git
+        const { bio, image } = user;
+        const token = utils.genToken(user);
+        res.status(201).json({ user: { email, username, bio, image, token } });
     } catch (e) {
-        console.log(e)
         res.sendStatus(422)
     }
-
 
 }
 
@@ -42,18 +42,25 @@ module.exports.login = async (req, res) => {
 
     try {
         const { email, password } = req.body.user;
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(401);
+        const dbUser = await User.findOne({ email });
+        if (!dbUser) {
+            return res.sendStatus(401);
         }
 
-        await utils.verifyPassword(user, password);
-        console.log(email, password)
-        res.send('let me work bruv')
+        const valid = await utils.verifyPassword(dbUser, password);
+
+        if (valid) {
+            const token = utils.genToken(dbUser)
+            const { username, bio, image } = dbUser;
+            res.status(200).json({ user: { email, username, bio, image, token } });
+        } else {
+            res.sendStatus(401)
+        }
+
+
     } catch (e) {
-
+        res.sendStatus(422)
     }
-
 
 }
 

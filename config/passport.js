@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 
 
 const opts = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Token'),
     secretOrKey: process.env.JWT_SECRET
 }
 

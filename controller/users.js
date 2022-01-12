@@ -12,7 +12,6 @@ module.exports.register = async (req, res) => {
    try {
       const { username, email, password } = req.body.user;
       const newUser = new User({ username, email });
-      await User.deleteMany({});
       newUser.password = await utils.hashPassword(password);
       await newUser.save();
       const user = await User.findOne({ username, email });

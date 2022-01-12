@@ -1,7 +1,6 @@
 /**************************************************************************
  *          THIS FILE HAS THE PASSPORT STRATEGIES CONFIGURATIONS          *
  **************************************************************************/
-require('dotenv').config();
 const passport = require('passport');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const { User } = require('../models')

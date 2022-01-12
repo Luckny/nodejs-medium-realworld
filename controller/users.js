@@ -1,7 +1,11 @@
 const { User } = require('../models'); //The User model.
 const utils = require('../config/utils'); //Hashing library.
-const { db } = require('../models/users');
-
+const {
+   ReasonPhrases,
+   StatusCodes,
+   getReasonPhrase,
+   getStatusCode,
+} = require('http-status-codes');
 /**
  * This function registers a user with a hashed password and
  * returns the registered user in JSON.
@@ -10,20 +14,31 @@ const { db } = require('../models/users');
  */
 module.exports.register = async (req, res) => {
    try {
-      const { username, email, password } = req.body.user;
-      const newUser = new User({ username, email });
+      const { username: name, email: mail, password } = req.body.user;
+      const dbUser = await User.findOne({ username: name, email: mail });
+      //if user exist
+      if (dbUser) {
+         return res
+            .status(StatusCodes.UNPROCESSABLE_ENTITY)
+            .json({ errors: { body: ['User already exist.'] } });
+      }
+
+      //Create new User and save to DB.
+      const newUser = new User({ username: name, email: mail });
       newUser.password = await utils.hashPassword(password);
-      await newUser.save();
-      const user = await User.findOne({ username, email });
-      const { email: mail, username: name, bio, image } = user;
+      const user = await newUser.save();
+
+      //Making response Object
+      const { email, username, bio, image } = user;
       const token = utils.genToken(user).token;
-      res.status(201).json({
-         user: { mail, name, bio, image, token },
+      return res.status(StatusCodes.CREATED).json({
+         user: { email, username, bio, image, token },
       });
    } catch (e) {
       console.log(e);
-      res.sendStatus(422);
-      //unknown server error 500
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+         errors: { body: ['Unexpected Server Error'] },
+      });
    }
 };
 
@@ -37,26 +52,35 @@ module.exports.register = async (req, res) => {
  */
 module.exports.login = async (req, res) => {
    try {
-      const { email, password } = req.body.user;
-      const dbUser = await User.findOne({ email });
+      const { email: mail, password } = req.body.user;
+      const dbUser = await User.findOne({ email: mail });
 
+      //if user doesnt exits
       if (!dbUser) {
-         return res.sendStatus(401);
+         return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json({ errors: { body: ['INVALID PASSWORD OR EMAIL!'] } });
       }
 
       const valid = await utils.verifyPassword(dbUser, password);
-
+      //if valid password
       if (valid) {
+         //Making response Object
          const token = utils.genToken(dbUser);
-         const { email: mail, username, bio, image } = dbUser;
-         res.status(200).json({
-            user: { mail, username, bio, image, token },
+         const { email, username, bio, image } = dbUser;
+         res.status(StatusCodes.OK).json({
+            user: { email, username, bio, image, token },
          });
       } else {
-         res.sendStatus(401);
+         //if INVALID password
+         res.status(StatusCodes.UNAUTHORIZED).json({
+            errors: { body: ['INVALID PASSWORD OR EMAIL!'] },
+         });
       }
    } catch (e) {
       console.log(e);
-      res.sendStatus(422);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+         errors: { body: ['Unexpected Server Error'] },
+      });
    }
 };

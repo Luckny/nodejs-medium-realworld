@@ -22,12 +22,10 @@ module.exports.register = async (req, res) => {
 
     try {
         const { username, email, password } = req.body.user;
-        await User.deleteOne({ username })//For testing purposes, delete line before pushing to git
         const newUser = new User({ username, email });
         newUser.password = await utils.hashPassword(password);
         await newUser.save();
         const user = await User.findOne({ username, email });
-        console.log(user)//For testing purposes, delete line before pushing to git
         const { bio, image } = user;
         const token = utils.genToken(user);
         res.status(201).json({ user: { email, username, bio, image, token } });

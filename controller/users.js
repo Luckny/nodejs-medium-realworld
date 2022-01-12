@@ -19,9 +19,11 @@ const { hashPassword, genToken } = require('../config/utils');//Hashing library.
 module.exports.register = async (req, res) => {
     try {
         const { username, email, password } = req.body.user;
+        await User.deleteOne({ username })//For testing purposes, delete line before pushing to git
         const newUser = await hashPassword(new User({ username, email }), password);
         await newUser.save();
         const result = await User.findOne({ username, email });
+        console.log(result)//For testing purposes, delete line before pushing to git
         const token = genToken(result);
         const user = (({ email, username, bio, image }) => ({ email, username, bio, image }))(result);
         user.token = token;

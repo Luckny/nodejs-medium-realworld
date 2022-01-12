@@ -8,7 +8,7 @@ require('../config/passport')
  *          ROUTES            *    
  ******************************/
 router.post('/users', users.register);
-router.post('/users/login', passport.authenticate('jwt', { session: false }), users.login)
+router.post('/users/login', users.login)
 
 //End Routes
 

@@ -10,17 +10,13 @@ const jwt = require('jsonwebtoken');
  ********************************************************/
 const bcrypt = require('bcrypt');
 module.exports.hashPassword = async (User, password) => {
-    User.salt = await bcrypt.genSalt(10)
-    User.password = await bcrypt.hash(password, User.salt);
+    salt = await bcrypt.genSalt(10)
+    User.password = await bcrypt.hash(password, salt);
     return User
 }
 
 module.exports.verifyPassword = async (User, password) => {
-    const match = await bcrypt.compare(password, User.password);
-    if (match) {
-        return console.log('it matches you dont need the salt bruv')
-    }
-    console.log('no match bro')
+    return await bcrypt.compare(password, User.password);
 }
 
 

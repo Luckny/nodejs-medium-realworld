@@ -58,8 +58,8 @@ module.exports.login = async (req, res) => {
       //if user doesnt exits
       if (!dbUser) {
          return res
-            .status(StatusCodes.UNAUTHORIZED)
-            .json({ errors: { body: ['INVALID PASSWORD OR EMAIL!'] } });
+            .status(StatusCodes.NOT_FOUND)
+            .json({ errors: { body: ['User Not Found!'] } });
       }
 
       const valid = await utils.verifyPassword(dbUser, password);

@@ -53,33 +53,44 @@ module.exports.makeJsonError = (message) => {
 /**************************************************************
  *    THIS FUNCTION VERIFIES AND OBJECT IS EMPTY OR NOT       *
  **************************************************************/
-module.exports.isEmpty = (obj) => {
-   return Object.keys(obj).length === 0;
+module.exports.hasEmptyField = (user) => {
+   return Object.keys(user).length === 0;
 };
 
 /**************************************************************
  *    THIS FUNCTION VERIFIES IF THE TWO OBJECTS HAVE AT LEAT
  *                ONE VALUE THAT REPEATS                      *
  **************************************************************/
-module.exports.hasSameValue = (firstObj, secondObj) => {
-   let isSameValue = false;
-   let sameField = null;
+module.exports.hasSameValue = async (newUser, oldUser) => {
    //for the key value pairs in the firstObj
-   for (const keyInFirst in firstObj) {
+   for (const keyInNewUser in newUser) {
       //for the key value pairs in the secondObj
-      for (const keyInSecond in secondObj) {
-         if (
-            keyInFirst === keyInSecond &&
-            firstObj[keyInFirst] === secondObj[keyInSecond]
-         ) {
-            isSameValue = true;
-            sameField = keyInFirst;
+      for (const keyInOldUser in oldUser) {
+         //I.E if we have email in the first key and email in second key, next line runs
+         if (keyInNewUser === keyInOldUser) {
+            //if it's the password field
+            if (keyInNewUser === 'password') {
+               isSamePassword = await this.verifyPassword(
+                  oldUser,
+                  newUser[keyInNewUser]
+               );
+               return {
+                  isSameValue: isSamePassword,
+                  sameField: isSamePassword ? keyInNewUser : null,
+                  isSamePassword,
+               };
+            } else if (newUser[keyInNewUser] === oldUser[keyInOldUser]) {
+               return {
+                  isSameValue: true,
+                  sameField: keyInOldUser,
+               };
+            }
          }
       }
    }
 
    return {
-      isSameValue,
-      sameField,
+      isSameValue: false,
+      isSamePassword: false,
    };
 };

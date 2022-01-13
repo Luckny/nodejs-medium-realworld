@@ -1,6 +1,5 @@
 const { User } = require('../models'); //The User model.
 const utils = require('../config/utils'); //Hashing library.
-const jwt = require('jsonwebtoken');
 const {
    ReasonPhrases,
    StatusCodes,
@@ -8,6 +7,7 @@ const {
    getStatusCode,
 } = require('http-status-codes');
 const JwtStrategy = require('passport-jwt/lib/strategy');
+
 /**
  * This function registers a user with a hashed password and
  * returns the registered user in JSON.
@@ -126,4 +126,47 @@ module.exports.currentUser = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-module.exports.updateUser = async (req, res) => {};
+module.exports.updateUser = async (req, res) => {
+   //verifies if the user from body has at least one field
+   if (utils.isEmpty(req.body.user)) {
+      return res
+         .status(StatusCodes.UNAUTHORIZED)
+         .json(utils.makeJsonError('At Least One Field Is Required!'));
+   }
+
+   //if it makes it to that point there is at least one field
+   try {
+      //get tke token and payload from the verify token middleware
+      const { token, payload } = req.tokenAndPayload;
+      //find user from database
+      const oldUser = await User.findOne({ _id: payload.sub });
+      //verify if a the value to update is different
+      const value = utils.hasSameValue(req.body.user, oldUser);
+      if (value.isSameValue) {
+         return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json(
+               utils.makeJsonError(
+                  `${value.sameField} Cannot Be The Same As Old ${value.sameField}`
+               )
+            );
+      }
+      //updating user
+      const newUser = await User.findByIdAndUpdate(
+         { _id: payload.sub },
+         { $set: req.body.user },
+         { new: true }
+      );
+
+      //Making response Object
+      const { email, username, bio, image } = newUser;
+      return res
+         .status(StatusCodes.OK)
+         .json({ user: { email, token, username, bio, image } });
+   } catch (e) {
+      console.log(e);
+      return res
+         .status(StatusCodes.UNAUTHORIZED)
+         .json(utils.makeJsonError('Unexpected Error!'));
+   }
+};

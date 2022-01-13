@@ -9,6 +9,9 @@ require('../config/passport');
  ******************************/
 router.post('/users', users.register);
 router.post('/users/login', users.login);
+router.route('/user')
+    .get(users.currentUser)
+  
 
 //End Routes
 

@@ -127,8 +127,15 @@ module.exports.currentUser = async (req, res) => {
  * @param {*} res
  */
 module.exports.updateUser = async (req, res) => {
+   //cannot update username
+   if (req.body.user.username) {
+      return res
+         .status(StatusCodes.UNAUTHORIZED)
+         .json(utils.makeJsonError('Username Cannot Be Updated!'));
+   }
+
    //verifies if the user from body has at least one field
-   if (utils.isEmpty(req.body.user)) {
+   if (utils.hasEmptyField(req.body.user)) {
       return res
          .status(StatusCodes.UNAUTHORIZED)
          .json(utils.makeJsonError('At Least One Field Is Required!'));
@@ -141,20 +148,33 @@ module.exports.updateUser = async (req, res) => {
       //find user from database
       const oldUser = await User.findOne({ _id: payload.sub });
       //verify if a the value to update is different
-      const value = utils.hasSameValue(req.body.user, oldUser);
-      if (value.isSameValue) {
+      const value = await utils.hasSameValue(req.body.user, oldUser);
+      console.log(
+         'has same value',
+         value.isSameValue,
+         'password?',
+         value.isSamePassword,
+         'its',
+         value.sameField
+      );
+
+      if (value.isSameValue || value.isSamePassword) {
          return res
             .status(StatusCodes.UNAUTHORIZED)
             .json(
                utils.makeJsonError(
-                  `${value.sameField} Cannot Be The Same As Old ${value.sameField}`
+                  `New ${value.sameField} Cannot Be The Same As Old ${value.sameField}`
                )
             );
       }
+      //Making the new updated user object
+      const updatedInfo = req.body.user;
+      updatedInfo.password = await utils.hashPassword(req.body.user.password);
+
       //updating user
       const newUser = await User.findByIdAndUpdate(
          { _id: payload.sub },
-         { $set: req.body.user },
+         { $set: updatedInfo },
          { new: true }
       );
 

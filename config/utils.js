@@ -37,3 +37,15 @@ module.exports.genToken = (User) => {
       token: signedToken,
    };
 };
+
+/********************************************
+ *    TO GENERATE A JSON ERROR OBJECT       *
+ ********************************************/
+module.exports.makeJsonError = (message) => {
+   const errors = {
+      errors: {
+         body: [message],
+      },
+   };
+   return errors;
+};

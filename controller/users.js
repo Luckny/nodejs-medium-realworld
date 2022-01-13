@@ -1,11 +1,13 @@
 const { User } = require('../models'); //The User model.
 const utils = require('../config/utils'); //Hashing library.
+const jwt = require('jsonwebtoken');
 const {
    ReasonPhrases,
    StatusCodes,
    getReasonPhrase,
    getStatusCode,
 } = require('http-status-codes');
+const JwtStrategy = require('passport-jwt/lib/strategy');
 /**
  * This function registers a user with a hashed password and
  * returns the registered user in JSON.
@@ -20,7 +22,7 @@ module.exports.register = async (req, res) => {
       if (dbUser) {
          return res
             .status(StatusCodes.UNPROCESSABLE_ENTITY)
-            .json({ errors: { body: ['User already exist.'] } });
+            .json(utils.makeJsonError('User Already Exist!'));
       }
 
       //Create new User and save to DB.
@@ -32,13 +34,13 @@ module.exports.register = async (req, res) => {
       const { email, username, bio, image } = user;
       const token = utils.genToken(user).token;
       return res.status(StatusCodes.CREATED).json({
-         user: { email, username, bio, image, token },
+         user: { email, token, username, bio, image },
       });
    } catch (e) {
       console.log(e);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-         errors: { body: ['Unexpected Server Error'] },
-      });
+      return res
+         .status(StatusCodes.INTERNAL_SERVER_ERROR)
+         .json(utils.makeJsonError('Unexpected Error!'));
    }
 };
 
@@ -59,28 +61,71 @@ module.exports.login = async (req, res) => {
       if (!dbUser) {
          return res
             .status(StatusCodes.NOT_FOUND)
-            .json({ errors: { body: ['User Not Found!'] } });
+            .json(utils.makeJsonError('User Not Found!'));
       }
 
       const valid = await utils.verifyPassword(dbUser, password);
       //if valid password
       if (valid) {
          //Making response Object
-         const token = utils.genToken(dbUser);
+         const token = utils.genToken(dbUser).token;
          const { email, username, bio, image } = dbUser;
          res.status(StatusCodes.OK).json({
-            user: { email, username, bio, image, token },
+            user: { email, token, username, bio, image },
          });
       } else {
          //if INVALID password
-         res.status(StatusCodes.UNAUTHORIZED).json({
-            errors: { body: ['INVALID PASSWORD OR EMAIL!'] },
-         });
+         res.status(StatusCodes.UNAUTHORIZED).json(
+            utils.makeJsonError('Invalid Password!')
+         );
       }
    } catch (e) {
       console.log(e);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-         errors: { body: ['Unexpected Server Error'] },
-      });
+      return res
+         .status(StatusCodes.INTERNAL_SERVER_ERROR)
+         .json(utils.makeJsonError('Unexpected Error!'));
+   }
+};
+
+module.exports.currentUser = async (req, res) => {
+   try {
+      //I need to get the user id from the  token
+      const token = req.headers.authorization.split(' ')[1];
+      //verifying the token will return the payload
+      const payload = jwt.verify(
+         token,
+         process.env.JWT_SECRET,
+         (err, payload) => {
+            //if a token error
+            if (err) {
+               return res
+                  .status(StatusCodes.UNAUTHORIZED)
+                  .json(utils.makeJsonError(err.message));
+            }
+            //if valid
+            return payload;
+         }
+      );
+      const userId = payload.sub;
+
+      //if valid
+      const user = await User.findOne({ _id: userId });
+      //if user is not in database
+      if (!user) {
+         return res
+            .status(StatusCodes.NOT_FOUND)
+            .json(utils.makeJsonError('User Not Found!'));
+      }
+
+      //Making response Object
+      const { email, username, bio, image } = user;
+      return res
+         .status(StatusCodes.OK)
+         .json({ user: { email, token, username, bio, image } });
+   } catch (e) {
+      console.log(e);
+      return res
+         .status(StatusCodes.UNPROCESSABLE_ENTITY)
+         .json(utils.makeJsonError('Unexpected Error'));
    }
 };

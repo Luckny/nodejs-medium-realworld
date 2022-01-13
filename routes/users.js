@@ -10,7 +10,7 @@ require('../config/passport');
 router.post('/users', users.register);
 router.post('/users/login', users.login);
 router.route('/user')
-    .get(users.currentUser)
+    .get(passport.authenticate('jwt', {session: false}), users.currentUser)
   
 
 //End Routes

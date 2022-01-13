@@ -87,29 +87,20 @@ module.exports.login = async (req, res) => {
    }
 };
 
+/**
+ *This Function returns the current logged in user if he is authenticated.
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
 module.exports.currentUser = async (req, res) => {
    try {
-      //I need to get the user id from the  token
-      const token = req.headers.authorization.split(' ')[1];
-      //verifying the token will return the payload
-      const payload = jwt.verify(
-         token,
-         process.env.JWT_SECRET,
-         (err, payload) => {
-            //if a token error
-            if (err) {
-               return res
-                  .status(StatusCodes.UNAUTHORIZED)
-                  .json(utils.makeJsonError(err.message));
-            }
-            //if valid
-            return payload;
-         }
-      );
-      const userId = payload.sub;
+      //from verify token middlewated
+      const { token, payload } = req.tokenAndPayload;
 
-      //if valid
-      const user = await User.findOne({ _id: userId });
+      //const token = req.headers.authorization.split(' ')[1];
+
+      const user = await User.findOne({ _id: payload.sub });
       //if user is not in database
       if (!user) {
          return res
@@ -129,3 +120,10 @@ module.exports.currentUser = async (req, res) => {
          .json(utils.makeJsonError('Unexpected Error'));
    }
 };
+
+/**
+ * This function Updates the current user information if he is authenticated
+ * @param {*} req
+ * @param {*} res
+ */
+module.exports.updateUser = async (req, res) => {};

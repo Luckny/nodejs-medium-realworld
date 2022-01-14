@@ -1,4 +1,4 @@
-const utils = require('../config/utils');
+const bcrypt = require('bcrypt');
 /*******************************************************************
  *      This File Defines and exports the User Schema which is
  *      defined using the mongoose docs.
@@ -46,7 +46,9 @@ const userSchema = new Schema({
 
 userSchema.pre('save', async function (next) {
    const user = this;
-   const hash = await utils.hashPassword(this.password);
+   const salt = await bcrypt.genSalt(10);
+   const hash = await bcrypt.hash(this.password, salt);
+
    this.password = hash;
    next();
 });

@@ -1,3 +1,4 @@
+const utils = require('../config/utils');
 /*******************************************************************
  *      This File Defines and exports the User Schema which is
  *      defined using the mongoose docs.
@@ -41,6 +42,13 @@ const userSchema = new Schema({
          ref: 'User',
       },
    ],
+});
+
+userSchema.pre('save', async function (next) {
+   const user = this;
+   const hash = await utils.hashPassword(this.password);
+   this.password = hash;
+   next();
 });
 
 //Creating the User model

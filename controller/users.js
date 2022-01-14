@@ -16,7 +16,11 @@ const JwtStrategy = require('passport-jwt/lib/strategy');
  */
 module.exports.register = async (req, res) => {
    try {
-      const { username: name, email: mail, password } = req.body.user;
+      const {
+         username: name,
+         email: mail,
+         password: preHashedPw,
+      } = req.body.user;
       const dbUser = await User.findOne({ username: name, email: mail });
       //if user exist
       if (dbUser) {
@@ -26,13 +30,16 @@ module.exports.register = async (req, res) => {
       }
 
       //Create new User and save to DB.
-      const newUser = new User({ username: name, email: mail });
-      newUser.password = await utils.hashPassword(password);
+      const newUser = new User({
+         username: name,
+         email: mail,
+         password: preHashedPw,
+      });
       const user = await newUser.save();
 
       //Making response Object
       const { email, username, bio, image } = user;
-      const token = utils.genToken(user).token;
+      const token = utils.genToken(user);
       return res.status(StatusCodes.CREATED).json({
          user: { email, token, username, bio, image },
       });
@@ -127,60 +134,57 @@ module.exports.currentUser = async (req, res) => {
  * @param {*} res
  */
 module.exports.updateUser = async (req, res) => {
-   //cannot update username
-   if (req.body.user.username) {
-      return res
-         .status(StatusCodes.UNAUTHORIZED)
-         .json(utils.makeJsonError('Username Cannot Be Updated!'));
-   }
-
-   //verifies if the user from body has at least one field
-   if (utils.hasEmptyField(req.body.user)) {
-      return res
-         .status(StatusCodes.UNAUTHORIZED)
-         .json(utils.makeJsonError('At Least One Field Is Required!'));
-   }
-
-   //if it makes it to that point there is at least one field
    try {
-      //get tke token and payload from the verify token middleware
-      const { token, payload } = req.tokenAndPayload;
-      //find user from database
-      const oldUser = await User.findOne({ _id: payload.sub });
-      //verify if a the value to update is different
-      const value = await utils.hasSameValue(req.body.user, oldUser);
-      console.log(
-         'has same value',
-         value.isSameValue,
-         'password?',
-         value.isSamePassword,
-         'its',
-         value.sameField
-      );
+      const {
+         username: name,
+         email: mail,
+         password,
+         bio: biography,
+         image: picture,
+      } = req.body.user;
 
-      if (value.isSameValue || value.isSamePassword) {
+      //cannot update username
+      if (name) {
+         return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json(utils.makeJsonError('Username Cannot Be Updated!'));
+      }
+      //verifies if the user from body has at least one field
+      if (utils.hasNoKeys(req.body.user)) {
+         return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json(utils.makeJsonError('At Least One Field Is Required!'));
+      }
+      //if email or password exist, meaning they are not empty strings
+      // but they only contain whiteSpaces, SEND ERROR
+      if (
+         (mail && utils.isWhiteSpace(mail)) ||
+         (password && utils.isWhiteSpace(password))
+      ) {
          return res
             .status(StatusCodes.UNAUTHORIZED)
             .json(
                utils.makeJsonError(
-                  `New ${value.sameField} Cannot Be The Same As Old ${value.sameField}`
+                  'Cannot Update Email Or Password To Empty String'
                )
             );
       }
-      //Making the new updated user object
-      const updatedInfo = req.body.user;
-      if (req.body.user.password)
-         updatedInfo.password = await utils.hashPassword(
-            req.body.user.password
-         );
+      //get tke token and payload from the verify token middleware(this will change)
+      const { token, payload } = req.tokenAndPayload;
+      //find user from database
+      const oldUser = await User.findOne({ _id: payload.sub });
+      //updating the fields
+      oldUser.email = mail || oldUser.email;
+      oldUser.bio = biography || oldUser.bio;
+      oldUser.image = picture || oldUser.image;
+      //if there is a password field and it is new, update it
+      oldUser.password =
+         password && utils.isNewPassword(password, oldUser)
+            ? password
+            : oldUser.password;
 
       //updating user
-      const newUser = await User.findByIdAndUpdate(
-         { _id: payload.sub },
-         { $set: updatedInfo },
-         { new: true }
-      );
-
+      const newUser = await oldUser.save();
       //Making response Object
       const { email, username, bio, image } = newUser;
       return res

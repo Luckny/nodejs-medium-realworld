@@ -68,7 +68,7 @@ module.exports.login = async (req, res) => {
       //if valid password
       if (valid) {
          //Making response Object
-         const token = utils.genToken(dbUser).token;
+         const token = utils.genToken(dbUser);
          const { email, username, bio, image } = dbUser;
          res.status(StatusCodes.OK).json({
             user: { email, token, username, bio, image },
@@ -169,7 +169,10 @@ module.exports.updateUser = async (req, res) => {
       }
       //Making the new updated user object
       const updatedInfo = req.body.user;
-      updatedInfo.password = await utils.hashPassword(req.body.user.password);
+      if (req.body.user.password)
+         updatedInfo.password = await utils.hashPassword(
+            req.body.user.password
+         );
 
       //updating user
       const newUser = await User.findByIdAndUpdate(

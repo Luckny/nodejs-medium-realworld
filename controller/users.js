@@ -6,7 +6,6 @@ const {
    getReasonPhrase,
    getStatusCode,
 } = require('http-status-codes');
-const JwtStrategy = require('passport-jwt/lib/strategy');
 
 /**
  * This function registers a user with a hashed password and

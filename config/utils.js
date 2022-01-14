@@ -3,16 +3,11 @@
  *******************************************************************/
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 /********************************************************
- *                 BCRYPT HASH AND VERIFY           *
+ *                 BCRYPT VERIFY                        *
  ********************************************************/
-const bcrypt = require('bcrypt');
-module.exports.hashPassword = async (password) => {
-   salt = await bcrypt.genSalt(10);
-   return await bcrypt.hash(password, salt);
-};
-
 module.exports.verifyPassword = async (User, password) => {
    return await bcrypt.compare(password, User.password);
 };
@@ -51,44 +46,27 @@ module.exports.makeJsonError = (message) => {
 /**************************************************************
  *    THIS FUNCTION VERIFIES AND OBJECT IS EMPTY OR NOT       *
  **************************************************************/
-module.exports.hasEmptyField = (user) => {
+module.exports.hasNoKeys = (user) => {
    return Object.keys(user).length === 0;
 };
 
 /**************************************************************
- *    THIS FUNCTION VERIFIES IF THE TWO OBJECTS HAVE AT LEAT
- *                ONE VALUE THAT REPEATS                      *
+ *    THIS FUNCTION RETURNS TRUE IF A STRING ELEMENT
+ *             ONLY HAS WHITESPACES                           *
  **************************************************************/
-module.exports.hasSameValue = async (newUser, oldUser) => {
-   //for the key value pairs in the firstObj
-   for (const keyInNewUser in newUser) {
-      //for the key value pairs in the secondObj
-      for (const keyInOldUser in oldUser) {
-         //I.E if we have email in the first key and email in second key, next line runs
-         if (keyInNewUser === keyInOldUser) {
-            //if it's the password field
-            if (keyInNewUser === 'password') {
-               isSamePassword = await this.verifyPassword(
-                  oldUser,
-                  newUser[keyInNewUser]
-               );
-               return {
-                  isSameValue: isSamePassword,
-                  sameField: isSamePassword ? keyInNewUser : null,
-                  isSamePassword,
-               };
-            } else if (newUser[keyInNewUser] === oldUser[keyInOldUser]) {
-               return {
-                  isSameValue: true,
-                  sameField: keyInOldUser,
-               };
-            }
-         }
-      }
-   }
+/**
+ * PS: I found out that an empty String "" evaluates to falsy in
+ *    js world so i do not need to check for that here.
+ * @param {*} value
+ * @returns
+ */
+module.exports.isWhiteSpace = (value) => {
+   return !value.trim();
+};
 
-   return {
-      isSameValue: false,
-      isSamePassword: false,
-   };
+/**************************************************************
+ *    THIS FUNCTION VERIFIES IF THE PROVIDED PASSWORD IS NEW  *
+ **************************************************************/
+module.exports.isNewPassword = async function (newPassword, user) {
+   return !(await this.verifyPassword(user, newPassword));
 };

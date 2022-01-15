@@ -32,4 +32,8 @@ npm-debug.log
 
 # OSX hidden files
 .DS_Store
+
+
+Conduit.postman_collection.json
 .env
+.prettierignore

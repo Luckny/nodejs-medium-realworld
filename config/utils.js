@@ -82,5 +82,5 @@ module.exports.verifyUpdate = (body) => {
    )
       message = 'Cannot Update Email Or Password To Empty String';
 
-   return message ? { dontUpdate: true, message } : { dontUpdate: false };
+   return message ? { update: false, message } : { update: true };
 };

@@ -3,7 +3,7 @@ require('dotenv').config(); //to use .env variables
 const express = require('express');
 const mongoose = require('./config/mongoose'); //Contains the mongoose configuration
 const { urlencoded } = require('express');
-const { userRoutes } = require('./routes');
+const { userRoutes, profileRoutes } = require('./routes');
 const utils = require('./config/utils');
 const app = express();
 
@@ -31,6 +31,7 @@ async function startServer(port) {
  *          ROUTES            *
  ******************************/
 app.use('/', userRoutes);
+app.use('/profiles', profileRoutes);
 
 //Error handler
 app.use((err, req, res, next) => {

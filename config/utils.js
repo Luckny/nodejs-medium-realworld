@@ -1,7 +1,6 @@
 /*******************************************************************
  *      This file has a lot of usefull functions for the app       *
  *******************************************************************/
-const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -20,7 +19,7 @@ module.exports.genToken = (User) => {
    const _id = User._id;
    const expiresIn = '1d';
    const payload = {
-      sub: _id,
+      id: _id,
       iat: Date.now(),
    };
 
@@ -69,4 +68,28 @@ module.exports.isWhiteSpace = (value) => {
  **************************************************************/
 module.exports.isNewPassword = async function (newPassword, user) {
    return !(await this.verifyPassword(user, newPassword));
+};
+
+/**************************************************************
+ *  THIS FUNCTION RETURNS TRUE VERIFY IF THE UPDATE REQUREST  *
+ *                       IS VALID                             *
+ **************************************************************/
+module.exports.verifyUpdate = (body) => {
+   const { username, email, password } = body.user;
+   let message = '';
+   //cannot update username
+   if (username) message = 'Username Cannot Be Updated!';
+
+   //verifies if the user from body has at least one field
+   if (this.hasNoKeys(body.user)) message = 'At Least One Field Is Required!';
+
+   //if email or password exist, meaning they are not empty strings
+   // but they only contain whiteSpaces, SEND ERROR
+   if (
+      (email && this.isWhiteSpace(email)) ||
+      (password && this.isWhiteSpace(password))
+   )
+      message = 'Cannot Update Email Or Password To Empty String';
+
+   return message ? { dontUpdate: true, message } : { dontUpdate: false };
 };

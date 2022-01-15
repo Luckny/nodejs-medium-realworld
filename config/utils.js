@@ -58,7 +58,7 @@ module.exports.isWhiteSpace = (value) => {
  *    THIS FUNCTION VERIFIES IF THE PROVIDED PASSWORD IS NEW  *
  **************************************************************/
 module.exports.isNewPassword = async function (newPassword, user) {
-   return !(await this.verifyPassword(user, newPassword));
+   return !(await user.isValidPassword(newPassword));
 };
 
 /**************************************************************

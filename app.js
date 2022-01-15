@@ -34,11 +34,8 @@ app.use('/', userRoutes);
 
 //Error handler
 app.use((err, req, res, next) => {
-   console.log('made it to handler');
-   if (err && err.status === 401) {
-      return res
-         .status(err.status)
-         .json(utils.makeJsonError('Unexpected Error'));
+   if (err.name === 'UnauthorizedError') {
+      return res.status(err.status).json(utils.makeJsonError(err.message));
    }
 });
 

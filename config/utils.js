@@ -2,15 +2,6 @@
  *      This file has a lot of usefull functions for the app       *
  *******************************************************************/
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-
-/********************************************************
- *                 BCRYPT VERIFY                        *
- ********************************************************/
-module.exports.verifyPassword = async (User, password) => {
-   return await bcrypt.compare(password, User.password);
-};
-//END BCRYPT
 
 /*********************************
  *         GENERATE JWT          *

@@ -15,12 +15,8 @@ const {
  */
 module.exports.register = async (req, res) => {
    try {
-      const {
-         username: name,
-         email: mail,
-         password: preHashedPw,
-      } = req.body.user;
-      const dbUser = await User.findOne({ username: name, email: mail });
+      const { username, email, password } = req.body.user;
+      const dbUser = await User.findOne({ username, email });
       //if user exist
       if (dbUser) {
          return res
@@ -30,18 +26,12 @@ module.exports.register = async (req, res) => {
 
       //Create new User and save to DB.
       const newUser = new User({
-         username: name,
-         email: mail,
-         password: preHashedPw,
+         username,
+         email,
+         password,
       });
       const user = await newUser.save();
-
-      //Making response Object
-      const { email, username, bio, image } = user;
-      const token = utils.genToken(user);
-      return res.status(StatusCodes.CREATED).json({
-         user: { email, token, username, bio, image },
-      });
+      return res.status(StatusCodes.OK).json(user.toRealWorldJson());
    } catch (e) {
       console.log(e);
       return res
@@ -60,8 +50,8 @@ module.exports.register = async (req, res) => {
  */
 module.exports.login = async (req, res) => {
    try {
-      const { email: mail, password } = req.body.user;
-      const dbUser = await User.findOne({ email: mail });
+      const { email, password } = req.body.user;
+      const dbUser = await User.findOne({ email });
 
       //if user doesnt exits
       if (!dbUser) {
@@ -70,20 +60,15 @@ module.exports.login = async (req, res) => {
             .json(utils.makeJsonError('User Not Found!'));
       }
 
-      const valid = await utils.verifyPassword(dbUser, password);
+      const validPassword = await utils.verifyPassword(dbUser, password);
       //if valid password
-      if (valid) {
-         //Making response Object
-         const token = utils.genToken(dbUser);
-         const { email, username, bio, image } = dbUser;
-         res.status(StatusCodes.OK).json({
-            user: { email, token, username, bio, image },
-         });
+      if (validPassword) {
+         return res.status(StatusCodes.OK).json(dbUser.toRealWorldJson());
       } else {
          //if INVALID password
-         res.status(StatusCodes.UNAUTHORIZED).json(
-            utils.makeJsonError('Invalid Password!')
-         );
+         return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json(utils.makeJsonError('Invalid Password!'));
       }
    } catch (e) {
       console.log(e);
@@ -102,11 +87,11 @@ module.exports.login = async (req, res) => {
 module.exports.currentUser = async (req, res) => {
    try {
       //from verify token middlewated
-      const { token, payload } = req.tokenAndPayload;
+      const {
+         payload: { id },
+      } = req;
 
-      //const token = req.headers.authorization.split(' ')[1];
-
-      const user = await User.findOne({ _id: payload.sub });
+      const user = await User.findById(id);
       //if user is not in database
       if (!user) {
          return res
@@ -114,11 +99,8 @@ module.exports.currentUser = async (req, res) => {
             .json(utils.makeJsonError('User Not Found!'));
       }
 
-      //Making response Object
-      const { email, username, bio, image } = user;
-      return res
-         .status(StatusCodes.OK)
-         .json({ user: { email, token, username, bio, image } });
+      //RESPONSE
+      return res.status(StatusCodes.OK).json(user.toRealWorldJson());
    } catch (e) {
       console.log(e);
       return res
@@ -132,50 +114,37 @@ module.exports.currentUser = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-module.exports.updateUser = async (req, res) => {
+module.exports.updateUser = async (req, res, next) => {
    try {
-      const {
-         username: name,
-         email: mail,
-         password,
-         bio: biography,
-         image: picture,
-      } = req.body.user;
-
-      //cannot update username
-      if (name) {
+      /**
+       * if a user tries:
+       *    to update a username,
+       *    to update with an empty user Object,
+       *    to update with an email or password that only has whitespaces
+       * there will me a message in the update variable.
+       */
+      const { dontUpdate, message } = utils.verifyUpdate(req.body);
+      if (dontUpdate) {
          return res
             .status(StatusCodes.UNAUTHORIZED)
-            .json(utils.makeJsonError('Username Cannot Be Updated!'));
-      }
-      //verifies if the user from body has at least one field
-      if (utils.hasNoKeys(req.body.user)) {
-         return res
-            .status(StatusCodes.UNAUTHORIZED)
-            .json(utils.makeJsonError('At Least One Field Is Required!'));
-      }
-      //if email or password exist, meaning they are not empty strings
-      // but they only contain whiteSpaces, SEND ERROR
-      if (
-         (mail && utils.isWhiteSpace(mail)) ||
-         (password && utils.isWhiteSpace(password))
-      ) {
-         return res
-            .status(StatusCodes.UNAUTHORIZED)
-            .json(
-               utils.makeJsonError(
-                  'Cannot Update Email Or Password To Empty String'
-               )
-            );
+            .json(utils.makeJsonError(message));
       }
       //get tke token and payload from the verify token middleware(this will change)
-      const { token, payload } = req.tokenAndPayload;
+      const {
+         payload: { id },
+      } = req;
       //find user from database
-      const oldUser = await User.findOne({ _id: payload.sub });
+      const oldUser = await User.findById(id);
+      if (!oldUser) {
+         return res
+            .status(StatusCodes.NOT_FOUND)
+            .json(utils.makeJsonError('User Not Found!'));
+      }
       //updating the fields
-      oldUser.email = mail || oldUser.email;
-      oldUser.bio = biography || oldUser.bio;
-      oldUser.image = picture || oldUser.image;
+      const { email, bio, password, image } = req.body.user;
+      oldUser.email = email || oldUser.email;
+      oldUser.bio = bio || oldUser.bio;
+      oldUser.image = image || oldUser.image;
       //if there is a password field and it is new, update it
       oldUser.password =
          password && utils.isNewPassword(password, oldUser)
@@ -184,11 +153,8 @@ module.exports.updateUser = async (req, res) => {
 
       //updating user
       const newUser = await oldUser.save();
-      //Making response Object
-      const { email, username, bio, image } = newUser;
-      return res
-         .status(StatusCodes.OK)
-         .json({ user: { email, token, username, bio, image } });
+      //RESPONSE
+      return res.status(StatusCodes.OK).json(newUser.toRealWorldJson());
    } catch (e) {
       console.log(e);
       return res

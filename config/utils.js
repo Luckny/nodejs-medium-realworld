@@ -55,13 +55,6 @@ module.exports.isWhiteSpace = (value) => {
 };
 
 /**************************************************************
- *    THIS FUNCTION VERIFIES IF THE PROVIDED PASSWORD IS NEW  *
- **************************************************************/
-module.exports.isNewPassword = async function (newPassword, user) {
-   return !(await user.isValidPassword(newPassword));
-};
-
-/**************************************************************
  *  THIS FUNCTION RETURNS TRUE VERIFY IF THE UPDATE REQUREST  *
  *                       IS VALID                             *
  **************************************************************/
@@ -78,7 +71,8 @@ module.exports.verifyUpdate = (body) => {
    // but they only contain whiteSpaces, SEND ERROR
    if (
       (email && this.isWhiteSpace(email)) ||
-      (password && this.isWhiteSpace(password))
+      password.length === 0 ||
+      this.isWhiteSpace(password)
    )
       message = 'Cannot Update Email Or Password To Empty String';
 

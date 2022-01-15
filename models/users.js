@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const utils = require('../config/utils');
 /*******************************************************************
  *      This File Defines and exports the User Schema which is
  *      defined using the mongoose docs.
@@ -46,12 +47,23 @@ const userSchema = new Schema({
 
 userSchema.pre('save', async function (next) {
    const user = this;
-   const salt = await bcrypt.genSalt(10);
-   const hash = await bcrypt.hash(this.password, salt);
+   const hash = await bcrypt.hash(this.password, 10);
 
    this.password = hash;
    next();
 });
+
+userSchema.methods.toRealWorldJson = function () {
+   return {
+      user: {
+         email: this.email,
+         token: utils.genToken(this),
+         username: this.username,
+         bio: this.bio,
+         image: this.image,
+      },
+   };
+};
 
 //Creating the User model
 const User = mongoose.model('User', userSchema);

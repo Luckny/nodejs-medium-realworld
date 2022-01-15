@@ -97,7 +97,6 @@ module.exports.currentUser = async (req, res) => {
             .status(StatusCodes.NOT_FOUND)
             .json(utils.makeJsonError('User Not Found!'));
       }
-
       //RESPONSE
       return res.status(StatusCodes.OK).json(user.toRealWorldJson());
    } catch (e) {
@@ -141,14 +140,12 @@ module.exports.updateUser = async (req, res, next) => {
       }
       //updating the fields
       const { email, bio, password, image } = req.body.user;
-      oldUser.email = email || oldUser.email;
-      oldUser.bio = bio || oldUser.bio;
-      oldUser.image = image || oldUser.image;
+      oldUser.email = email ?? oldUser.email;
+      oldUser.bio = bio ?? oldUser.bio;
+      oldUser.image = image ?? oldUser.image;
       //if there is a password field and it is new, update it
-      oldUser.password =
-         password && utils.isNewPassword(password, oldUser)
-            ? password
-            : oldUser.password;
+      const isNewPassword = await oldUser.isValidPassword(password);
+      if (password && !isNewPassword) oldUser.password = password;
 
       //updating user
       const newUser = await oldUser.save();

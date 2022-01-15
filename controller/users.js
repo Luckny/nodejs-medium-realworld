@@ -122,8 +122,8 @@ module.exports.updateUser = async (req, res, next) => {
        *    to update with an email or password that only has whitespaces
        * there will me a message in the update variable.
        */
-      const { dontUpdate, message } = utils.verifyUpdate(req.body);
-      if (dontUpdate) {
+      const { update, message } = utils.verifyUpdate(req.body);
+      if (!update) {
          return res
             .status(StatusCodes.UNAUTHORIZED)
             .json(utils.makeJsonError(message));

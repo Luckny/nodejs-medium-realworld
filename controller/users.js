@@ -60,9 +60,8 @@ module.exports.login = async (req, res) => {
             .json(utils.makeJsonError('User Not Found!'));
       }
 
-      const validPassword = await utils.verifyPassword(dbUser, password);
       //if valid password
-      if (validPassword) {
+      if (await dbUser.isValidPassword(password)) {
          return res.status(StatusCodes.OK).json(dbUser.toRealWorldJson());
       } else {
          //if INVALID password

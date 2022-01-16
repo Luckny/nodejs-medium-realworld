@@ -58,6 +58,11 @@ userSchema.methods.isValidPassword = async function (password) {
    return await bcrypt.compare(password, this.password);
 };
 
+userSchema.methods.isFollowing = function (anothorUserId) {
+   const user = this;
+   return user.following.includes(anothorUserId);
+};
+
 userSchema.methods.toRealWorldJson = function () {
    return {
       user: {
@@ -66,6 +71,17 @@ userSchema.methods.toRealWorldJson = function () {
          username: this.username,
          bio: this.bio,
          image: this.image,
+      },
+   };
+};
+
+userSchema.methods.toProfileJson = function (isFollowing) {
+   return {
+      profile: {
+         username: this.username,
+         bio: this.bio,
+         image: this.image,
+         following: isFollowing || false,
       },
    };
 };

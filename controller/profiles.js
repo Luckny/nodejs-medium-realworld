@@ -67,14 +67,7 @@ module.exports.follow = async (req, res) => {
       return res
          .status(StatusCodes.OK)
          .json(profile.toProfileJson({ isFollowing: true }));
-   const { followError, followErrorMessage } = currentUser.follow(profile._id);
-   //If current user is already following the profile
-   if (followError) {
-      return res
-         .status(StatusCodes.UNAUTHORIZED)
-         .json(utils.makeJsonError(followErrorMessage));
-   }
-   //else
+   currentUser.follow(profile._id);
    await currentUser.save();
    return res
       .status(StatusCodes.OK)

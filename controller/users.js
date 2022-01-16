@@ -144,8 +144,10 @@ module.exports.updateUser = async (req, res, next) => {
       oldUser.bio = bio ?? oldUser.bio;
       oldUser.image = image ?? oldUser.image;
       //if there is a password field and it is new, update it
-      const isNewPassword = await oldUser.isValidPassword(password);
-      if (password && !isNewPassword) oldUser.password = password;
+      if (password) {
+         const isSamePassword = await oldUser.isValidPassword(password);
+         if (!isSamePassword) oldUser.password = password;
+      }
 
       //updating user
       const newUser = await oldUser.save();

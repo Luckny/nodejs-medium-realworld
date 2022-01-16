@@ -79,14 +79,10 @@ userSchema.methods.isFollowing = function (anothorUserId) {
 userSchema.methods.follow = function (anothorUserId) {
    const user = this;
    if (this.isFollowing(anothorUserId)) {
-      return {
-         followError: true,
-         followErrorMessage: `Already Following ${user.username}`,
-      };
+      return;
    }
 
    user.following.push(anothorUserId);
-   return { followError: false };
 };
 
 /**

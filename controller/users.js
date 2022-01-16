@@ -1,17 +1,10 @@
 const { User } = require('../models'); //The User model.
 const utils = require('../config/utils'); //Hashing library.
-const {
-   ReasonPhrases,
-   StatusCodes,
-   getReasonPhrase,
-   getStatusCode,
-} = require('http-status-codes');
+const { StatusCodes } = require('http-status-codes');
 
 /**
  * This function registers a user with a hashed password and
  * returns the registered user in JSON.
- * @param {*} req
- * @param {*} res
  */
 module.exports.register = async (req, res) => {
    try {
@@ -44,9 +37,6 @@ module.exports.register = async (req, res) => {
  * This function is used to log in a user.
  * It verifies the password and if the user is valid
  * returns the user in JSON.
- * @param {*} req
- * @param {*} res
- * @returns
  */
 module.exports.login = async (req, res) => {
    try {
@@ -79,9 +69,6 @@ module.exports.login = async (req, res) => {
 
 /**
  *This Function returns the current logged in user if he is authenticated.
- * @param {*} req
- * @param {*} res
- * @returns
  */
 module.exports.currentUser = async (req, res) => {
    try {
@@ -109,8 +96,6 @@ module.exports.currentUser = async (req, res) => {
 
 /**
  * This function Updates the current user information if he is authenticated
- * @param {*} req
- * @param {*} res
  */
 module.exports.updateUser = async (req, res, next) => {
    try {

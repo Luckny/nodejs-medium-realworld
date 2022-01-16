@@ -1,12 +1,6 @@
 const { User } = require('../models'); //The User model.
 const utils = require('../config/utils'); //Hashing library.
-const {
-   ReasonPhrases,
-   StatusCodes,
-   getReasonPhrase,
-   getStatusCode,
-} = require('http-status-codes');
-const { findByIdAndUpdate, findById } = require('../models/users');
+const { StatusCodes } = require('http-status-codes');
 
 /**
  * This function fetches a user profile if it exists using the
@@ -43,7 +37,7 @@ module.exports.getProfile = async (req, res) => {
 };
 
 /**
- * This function adds a profile to the current users following list
+ * This function adds a profile to the current user's following list
  */
 module.exports.follow = async (req, res) => {
    const {
@@ -60,16 +54,51 @@ module.exports.follow = async (req, res) => {
          .json(utils.makeJsonError('User Profile Not Found!'));
    }
    //find the current user
-   const currentUser = await User.findById(id);
+   const loggedInUser = await User.findById(id);
    //if a user tries to follow himself, just send his own profile back
    //with following set to true
-   if (currentUser._id.equals(profile._id))
+   if (loggedInUser._id.equals(profile._id))
       return res
          .status(StatusCodes.OK)
          .json(profile.toProfileJson({ isFollowing: true }));
-   currentUser.follow(profile._id);
-   await currentUser.save();
+   loggedInUser.follow(profile._id);
+   await loggedInUser.save();
    return res
       .status(StatusCodes.OK)
       .json(profile.toProfileJson({ isFollowing: true }));
+};
+
+/**
+ * This function removes a profile from the current user's following list
+ */
+module.exports.unfollow = async (req, res) => {
+   const {
+      params: { username },
+      payload: { id },
+   } = req;
+
+   //Find the profile with the username
+   const profile = await User.findOne({ username });
+   //If profile is not in DB
+   if (!profile) {
+      return res
+         .status(StatusCodes.NOT_FOUND)
+         .json(utils.makeJsonError('User Profile Not Found!'));
+   }
+
+   //Find the logged in user
+   const loggedInUser = await User.findById(id);
+   //if a user tries to unfollow himself, just send his own profile back
+   //with following set to true
+   if (loggedInUser._id.equals(profile._id))
+      return res
+         .status(StatusCodes.OK)
+         .json(profile.toProfileJson({ isFollowing: true }));
+
+   //unfollow the profile
+   loggedInUser.unfollow(profile._id);
+   loggedInUser.save();
+   return res
+      .status(StatusCodes.OK)
+      .json(profile.toProfileJson({ isFollowing: false }));
 };

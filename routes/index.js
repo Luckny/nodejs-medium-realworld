@@ -3,8 +3,10 @@
  *****************************************************************/
 const userRoutes = require('./users');
 const profileRoutes = require('./profiles');
+const articleRoutes = require('./articles')
 
 module.exports = {
    userRoutes,
    profileRoutes,
+   articleRoutes
 };

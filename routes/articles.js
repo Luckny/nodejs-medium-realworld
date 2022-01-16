@@ -6,15 +6,15 @@ const auth = require('../config/auth');
 /******************************
  *          ROUTES            *
  ******************************/
-router.get('/feed', auth.required, articles.getFeed);
+router.get('/feed', auth.required, articles.userFeed);
 router.route('/')
-    .get(auth.optional, articles.all)
-    .post(auth.required, articles.createArticle)
+    .get(auth.optional, articles.getAll)
+    .post(auth.required, articles.createOne)
 
 router.route('/:slug')
     .get(auth.optional, articles.getOne)
     .put(auth.required, articles.updateOne)
-    .delete(auth.required, articles.destroy)
+    .delete(auth.required, articles.destroyOne)
 
 
 

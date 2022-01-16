@@ -1,5 +1,5 @@
 const express = require('express');
-const articles = require('../controller/users'); //For all the articles functions.
+const articles = require('../controller/articles'); //For all the articles functions.
 const router = express.Router(); //The Router library.
 const auth = require('../config/auth');
 

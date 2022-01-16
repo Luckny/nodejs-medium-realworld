@@ -7,6 +7,8 @@ const auth = require('../config/auth');
  *          ROUTES            *
  ******************************/
 router.get('/:username', auth.optional, profiles.getProfile);
+router.route('/:username/follow')
+    .post(auth.required, profiles.follow)
 
 //End Routes
 

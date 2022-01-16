@@ -45,6 +45,9 @@ const userSchema = new Schema({
    ],
 });
 
+/**
+ * This function hashes a the user password before saving
+ */
 userSchema.pre('save', async function (next) {
    const user = this;
    if (!user.isModified('password')) return next();
@@ -54,16 +57,43 @@ userSchema.pre('save', async function (next) {
    next();
 });
 
+/**
+ * This function verifies if the recieved password is a valid one
+ */
 userSchema.methods.isValidPassword = async function (password) {
    return await bcrypt.compare(password, this.password);
 };
 
+/**
+ * This function verifies if the user id recieved is part of this user's
+ * following array
+ */
 userSchema.methods.isFollowing = function (anothorUserId) {
    const user = this;
    return user.following.includes(anothorUserId);
 };
 
-userSchema.methods.toRealWorldJson = function () {
+/**
+ * This function adds the recieved user to this user's following array
+ */
+userSchema.methods.follow = function (anothorUserId) {
+   const user = this;
+   if (this.isFollowing(anothorUserId)) {
+      return {
+         followError: true,
+         followErrorMessage: `Already Following ${user.username}`,
+      };
+   }
+
+   user.following.push(anothorUserId);
+   return { followError: false };
+};
+
+/**
+ * This function renders a user object with only the usefull
+ * information for the api
+ */
+userSchema.methods.toUserJson = function () {
    return {
       user: {
          email: this.email,
@@ -75,7 +105,11 @@ userSchema.methods.toRealWorldJson = function () {
    };
 };
 
-userSchema.methods.toProfileJson = function (isFollowing) {
+/**
+ * This function renders a profile object
+ */
+userSchema.methods.toProfileJson = function (followObject) {
+   const { isFollowing } = followObject;
    return {
       profile: {
          username: this.username,

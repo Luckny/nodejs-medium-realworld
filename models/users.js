@@ -86,6 +86,17 @@ userSchema.methods.follow = function (anothorUserId) {
 };
 
 /**
+ * This function removes the recieved user from this user's following array
+ */
+userSchema.methods.unfollow = function (anothorUserId) {
+   const user = this;
+   const index = user.following.indexOf(anothorUserId);
+   if (index !== -1) {
+      return user.following.splice(index, 1);
+   }
+};
+
+/**
  * This function renders a user object with only the usefull
  * information for the api
  */

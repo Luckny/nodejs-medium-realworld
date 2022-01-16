@@ -31,7 +31,7 @@ module.exports.register = async (req, res) => {
          password,
       });
       const user = await newUser.save();
-      return res.status(StatusCodes.OK).json(user.toRealWorldJson());
+      return res.status(StatusCodes.OK).json(user.toUserJson());
    } catch (e) {
       console.log(e);
       return res
@@ -62,7 +62,7 @@ module.exports.login = async (req, res) => {
 
       //if valid password
       if (await dbUser.isValidPassword(password)) {
-         return res.status(StatusCodes.OK).json(dbUser.toRealWorldJson());
+         return res.status(StatusCodes.OK).json(dbUser.toUserJson());
       } else {
          //if INVALID password
          return res
@@ -98,7 +98,7 @@ module.exports.currentUser = async (req, res) => {
             .json(utils.makeJsonError('User Not Found!'));
       }
       //RESPONSE
-      return res.status(StatusCodes.OK).json(user.toRealWorldJson());
+      return res.status(StatusCodes.OK).json(user.toUserJson());
    } catch (e) {
       console.log(e);
       return res
@@ -152,7 +152,7 @@ module.exports.updateUser = async (req, res, next) => {
       //updating user
       const newUser = await oldUser.save();
       //RESPONSE
-      return res.status(StatusCodes.OK).json(newUser.toRealWorldJson());
+      return res.status(StatusCodes.OK).json(newUser.toUserJson());
    } catch (e) {
       console.log(e);
       return res

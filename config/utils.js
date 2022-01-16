@@ -71,8 +71,7 @@ module.exports.verifyUpdate = (body) => {
    // but they only contain whiteSpaces, SEND ERROR
    if (
       (email && this.isWhiteSpace(email)) ||
-      password.length === 0 ||
-      this.isWhiteSpace(password)
+      (password && (password.length === 0) | this.isWhiteSpace(password))
    )
       message = 'Cannot Update Email Or Password To Empty String';
 

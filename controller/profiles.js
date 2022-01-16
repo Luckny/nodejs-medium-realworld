@@ -6,7 +6,12 @@ const {
    getReasonPhrase,
    getStatusCode,
 } = require('http-status-codes');
+const { findByIdAndUpdate, findById } = require('../models/users');
 
+/**
+ * This function fetches a user profile if it exists using the
+ * username recieved from the parameters
+ */
 module.exports.getProfile = async (req, res) => {
    const { username } = req.params;
    //the user beeing searched for
@@ -32,5 +37,46 @@ module.exports.getProfile = async (req, res) => {
       )
          isFollowing = true;
    }
-   return res.status(StatusCodes.OK).json(profile.toProfileJson(isFollowing));
+   return res
+      .status(StatusCodes.OK)
+      .json(profile.toProfileJson({ isFollowing }));
+};
+
+/**
+ * This function adds a profile to the current users following list
+ */
+module.exports.follow = async (req, res) => {
+   const {
+      params: { username },
+      payload: { id },
+   } = req;
+
+   //Find the profile with the username
+   const profile = await User.findOne({ username });
+   //If profile is not in DB
+   if (!profile) {
+      return res
+         .status(StatusCodes.NOT_FOUND)
+         .json(utils.makeJsonError('User Profile Not Found!'));
+   }
+   //find the current user
+   const currentUser = await User.findById(id);
+   //if a user tries to follow himself, just send his own profile back
+   //with following set to true
+   if (currentUser._id.equals(profile._id))
+      return res
+         .status(StatusCodes.OK)
+         .json(profile.toProfileJson({ isFollowing: true }));
+   const { followError, followErrorMessage } = currentUser.follow(profile._id);
+   //If current user is already following the profile
+   if (followError) {
+      return res
+         .status(StatusCodes.UNAUTHORIZED)
+         .json(utils.makeJsonError(followErrorMessage));
+   }
+   //else
+   await currentUser.save();
+   return res
+      .status(StatusCodes.OK)
+      .json(profile.toProfileJson({ isFollowing: true }));
 };

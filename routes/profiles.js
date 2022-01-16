@@ -9,6 +9,7 @@ const auth = require('../config/auth');
 router.get('/:username', auth.optional, profiles.getProfile);
 router.route('/:username/follow')
     .post(auth.required, profiles.follow)
+    .delete(auth.required, profiles.unfollow)
 
 //End Routes
 

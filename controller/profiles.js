@@ -33,7 +33,7 @@ module.exports.getProfile = async (req, res) => {
    }
    return res
       .status(StatusCodes.OK)
-      .json(profile.toProfileJson({ isFollowing }));
+      .json({ profile: profile.toProfileJson({ isFollowing }) });
 };
 
 /**
@@ -60,12 +60,12 @@ module.exports.follow = async (req, res) => {
    if (loggedInUser._id.equals(profile._id))
       return res
          .status(StatusCodes.OK)
-         .json(profile.toProfileJson({ isFollowing: true }));
+         .json({ profile: profile.toProfileJson({ isFollowing: true }) });
    loggedInUser.follow(profile._id);
    await loggedInUser.save();
    return res
       .status(StatusCodes.OK)
-      .json(profile.toProfileJson({ isFollowing: true }));
+      .json({ profile: profile.toProfileJson({ isFollowing: true }) });
 };
 
 /**
@@ -93,12 +93,12 @@ module.exports.unfollow = async (req, res) => {
    if (loggedInUser._id.equals(profile._id))
       return res
          .status(StatusCodes.OK)
-         .json(profile.toProfileJson({ isFollowing: true }));
+         .json({ profile: profile.toProfileJson({ isFollowing: true }) });
 
    //unfollow the profile
    loggedInUser.unfollow(profile._id);
    loggedInUser.save();
    return res
       .status(StatusCodes.OK)
-      .json(profile.toProfileJson({ isFollowing: false }));
+      .json({ profile: profile.toProfileJson({ isFollowing: false }) });
 };

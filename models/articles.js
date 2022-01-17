@@ -31,7 +31,7 @@ const articleSchema = new Schema(
       },
       author: {
          type: Schema.Types.ObjectId,
-         ref: 'Profile',
+         ref: 'User',
       },
       comments: [
          {
@@ -42,6 +42,34 @@ const articleSchema = new Schema(
    },
    { timestamps: true }
 );
+
+/**
+ * returns a representation of the article with a populated author field
+ * @param {User} currentUser the current logged in user
+ * @param {User} author the author of the article
+ * @returns a representation of the article
+ */
+articleSchema.methods.toAPIJson = function (currentUser, author) {
+   const { favorites } = currentUser;
+   const { username, bio, image } = author;
+   return {
+      slug: this.slug,
+      title: this.title,
+      description: this.description,
+      body: this.body,
+      tagList: this.tagList,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      favorited: favorites.includes(this._id),
+      favoritesCount: this.favoritesCount,
+      author: {
+         username,
+         bio,
+         image,
+         following: currentUser.isFollowing(author._id),
+      },
+   };
+};
 
 //Creating the Article model
 const Article = mongoose.model('Article', articleSchema);

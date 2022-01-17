@@ -70,7 +70,9 @@ userSchema.methods.isValidPassword = async function (password) {
  */
 userSchema.methods.isFollowing = function (anothorUserId) {
    const user = this;
-   return user.following.includes(anothorUserId);
+   return (
+      user.following.includes(anothorUserId) || user._id.equals(anothorUserId)
+   );
 };
 
 /**
@@ -118,12 +120,10 @@ userSchema.methods.toUserJson = function () {
 userSchema.methods.toProfileJson = function (followObject) {
    const { isFollowing } = followObject;
    return {
-      profile: {
-         username: this.username,
-         bio: this.bio,
-         image: this.image,
-         following: isFollowing || false,
-      },
+      username: this.username,
+      bio: this.bio,
+      image: this.image,
+      following: isFollowing || false,
    };
 };
 

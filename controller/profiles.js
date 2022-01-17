@@ -62,7 +62,6 @@ module.exports.follow = async (req, res) => {
          .status(StatusCodes.OK)
          .json({ profile: profile.toProfileJson({ isFollowing: true }) });
    loggedInUser.follow(profile._id);
-   await loggedInUser.save();
    return res
       .status(StatusCodes.OK)
       .json({ profile: profile.toProfileJson({ isFollowing: true }) });

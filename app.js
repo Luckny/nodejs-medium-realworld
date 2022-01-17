@@ -1,9 +1,9 @@
 process.on('warning', (e) => console.warn(e.stack));
 require('dotenv').config(); //to use .env variables
+const { userRoutes, profileRoutes, articleRoutes } = require('./routes');
 const express = require('express');
 const mongoose = require('./config/mongoose'); //Contains the mongoose configuration
 const { urlencoded } = require('express');
-const { userRoutes, profileRoutes, articleRoutes } = require('./routes');
 const utils = require('./config/utils');
 const app = express();
 

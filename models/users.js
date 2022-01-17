@@ -70,9 +70,7 @@ userSchema.methods.isValidPassword = async function (password) {
  */
 userSchema.methods.isFollowing = function (anothorUserId) {
    const user = this;
-   return (
-      user.following.includes(anothorUserId) || user._id.equals(anothorUserId)
-   );
+   return user.following.includes(anothorUserId);
 };
 
 /**
@@ -85,7 +83,7 @@ userSchema.methods.follow = function (anothorUserId) {
    }
 
    user.following.push(anothorUserId);
-   this.save();
+   return this.save();
 };
 
 /**
@@ -93,8 +91,8 @@ userSchema.methods.follow = function (anothorUserId) {
  */
 userSchema.methods.unfollow = function (anothorUserId) {
    const user = this;
-   user.following.remove(anothorUserId);
-   user.save();
+   if (!user._id.equals(anothorUserId)) user.following.remove(anothorUserId);
+   return user.save();
 };
 
 /**
@@ -116,13 +114,12 @@ userSchema.methods.toUserJson = function () {
 /**
  * This function renders a profile object
  */
-userSchema.methods.toProfileJson = function (followObject) {
-   const { isFollowing } = followObject;
+userSchema.methods.toProfileJson = function (isFollowing) {
    return {
       username: this.username,
       bio: this.bio,
       image: this.image,
-      following: isFollowing || false,
+      following: isFollowing,
    };
 };
 

@@ -23,7 +23,8 @@ module.exports.register = async (req, res) => {
          email,
          password,
       });
-      const user = await newUser.save();
+      //make user follow himself
+      const user = await newUser.follow(newUser._id);
       return res.status(StatusCodes.OK).json(user.toUserJson());
    } catch (e) {
       console.log(e);

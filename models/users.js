@@ -85,6 +85,7 @@ userSchema.methods.follow = function (anothorUserId) {
    }
 
    user.following.push(anothorUserId);
+   this.save();
 };
 
 /**

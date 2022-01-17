@@ -96,7 +96,6 @@ module.exports.unfollow = async (req, res) => {
 
    //unfollow the profile
    loggedInUser.unfollow(profile._id);
-   loggedInUser.save();
    return res
       .status(StatusCodes.OK)
       .json({ profile: profile.toProfileJson({ isFollowing: false }) });

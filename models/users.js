@@ -93,10 +93,8 @@ userSchema.methods.follow = function (anothorUserId) {
  */
 userSchema.methods.unfollow = function (anothorUserId) {
    const user = this;
-   const index = user.following.indexOf(anothorUserId);
-   if (index !== -1) {
-      return user.following.splice(index, 1);
-   }
+   user.following.remove(anothorUserId);
+   user.save();
 };
 
 /**

@@ -24,16 +24,11 @@ module.exports.getProfile = async (req, res) => {
       const loggedInUser = await User.findById(id);
 
       //if the logged in user is following the profile return true
-      //or if the logged in user searched for his own profile
-      if (
-         loggedInUser.isFollowing(profile._id) |
-         loggedInUser._id.equals(profile._id)
-      )
-         isFollowing = true;
+      if (loggedInUser.isFollowing(profile._id)) isFollowing = true;
    }
    return res
       .status(StatusCodes.OK)
-      .json({ profile: profile.toProfileJson({ isFollowing }) });
+      .json({ profile: profile.toProfileJson(isFollowing) });
 };
 
 /**
@@ -55,16 +50,11 @@ module.exports.follow = async (req, res) => {
    }
    //find the current user
    const loggedInUser = await User.findById(id);
-   //if a user tries to follow himself, just send his own profile back
-   //with following set to true
-   if (loggedInUser._id.equals(profile._id))
-      return res
-         .status(StatusCodes.OK)
-         .json({ profile: profile.toProfileJson({ isFollowing: true }) });
-   loggedInUser.follow(profile._id);
-   return res
-      .status(StatusCodes.OK)
-      .json({ profile: profile.toProfileJson({ isFollowing: true }) });
+
+   await loggedInUser.follow(profile._id);
+   return res.status(StatusCodes.OK).json({
+      profile: profile.toProfileJson(loggedInUser.isFollowing(profile._id)),
+   });
 };
 
 /**
@@ -87,16 +77,11 @@ module.exports.unfollow = async (req, res) => {
 
    //Find the logged in user
    const loggedInUser = await User.findById(id);
-   //if a user tries to unfollow himself, just send his own profile back
-   //with following set to true
-   if (loggedInUser._id.equals(profile._id))
-      return res
-         .status(StatusCodes.OK)
-         .json({ profile: profile.toProfileJson({ isFollowing: true }) });
 
    //unfollow the profile
-   loggedInUser.unfollow(profile._id);
-   return res
-      .status(StatusCodes.OK)
-      .json({ profile: profile.toProfileJson({ isFollowing: false }) });
+   //if the user tries to unfollow himself it dosent work
+   await loggedInUser.unfollow(profile._id);
+   return res.status(StatusCodes.OK).json({
+      profile: profile.toProfileJson(loggedInUser.isFollowing(profile._id)),
+   });
 };

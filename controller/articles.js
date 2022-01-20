@@ -50,14 +50,35 @@ module.exports.createOne = async (req, res) => {
 
    return res
       .status(StatusCodes.OK)
-      .json(createdArticle.toAPIJson(loggedInUser, loggedInUser));
+      .json(await createdArticle.toAPIJson(loggedInUser));
 };
 
 /**
  * This function fetches a particular article
  */
 module.exports.getOne = async (req, res) => {
-   res.send('Getting one article');
+   try {
+      const {
+         params: { slug },
+         payload: { id },
+      } = req;
+      const article = Article.findOne({ slug });
+      //if article doesnt exist
+      if (!article) {
+         return res
+            .status(StatusCodes.NOT_FOUND)
+            .json(utils.makeJsonError('User Not Found!'));
+      }
+      print(slug, id);
+      return res
+         .status(StatusCodes.OK)
+         .json(article.toAPIJson(loggedInUser, loggedInUser));
+   } catch (e) {
+      console.log(e);
+      return res
+         .status(StatusCodes.INTERNAL_SERVER_ERROR)
+         .json(utils.makeJsonError('Unexpected Error!'));
+   }
 };
 
 /**

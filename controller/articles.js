@@ -47,7 +47,7 @@ module.exports.createOne = async (req, res) => {
 
       return res
          .status(StatusCodes.OK)
-         .json(createdArticle.toAPIJson(loggedInUser, loggedInUser));
+         .json(await createdArticle.toAPIJson(loggedInUser));
    } catch (e) {
       console.log(e);
       return res

@@ -28,29 +28,32 @@ module.exports.getAll = async (req, res) => {
  * NB: i will use the Mongodb _id as slug
  */
 module.exports.createOne = async (req, res) => {
-   const { title, description, body, tagList } = req.body.article;
-   const {
-      payload: { id },
-   } = req;
+   try {
+      const { article: newArticle } = req.body;
+      const {
+         payload: { id },
+      } = req;
 
-   //getting the logged in user
-   const loggedInUser = await User.findById(id);
-   //creating the new article
-   const slug = makeSlug(`${title} ${randomCharacters()}`);
-   const article = new Article({
-      slug,
-      title,
-      description,
-      body,
-      tagList,
-      author: loggedInUser,
-   });
+      //getting the logged in user
+      const loggedInUser = await User.findById(id);
+      //Making a unique slug
+      const slug = makeSlug(`${newArticle.title} ${randomCharacters()}`);
+      //creating the new article
+      const article = new Article(newArticle);
+      article.slug = slug;
+      article.author = loggedInUser;
 
-   const createdArticle = await article.save();
+      const createdArticle = await article.save();
 
-   return res
-      .status(StatusCodes.OK)
-      .json(createdArticle.toAPIJson(loggedInUser, loggedInUser));
+      return res
+         .status(StatusCodes.OK)
+         .json(createdArticle.toAPIJson(loggedInUser, loggedInUser));
+   } catch (e) {
+      console.log(e);
+      return res
+         .status(StatusCodes.INTERNAL_SERVER_ERROR)
+         .json(utils.makeJsonError('Unexpected Error!'));
+   }
 };
 
 /**

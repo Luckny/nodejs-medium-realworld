@@ -4,6 +4,8 @@
  *******************************************************************/
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+//i need the user schema for author operations
+const User = require('./users');
 
 const articleSchema = new Schema(
    {
@@ -49,9 +51,14 @@ const articleSchema = new Schema(
  * @param {User} author the author of the article
  * @returns a representation of the article
  */
-articleSchema.methods.toAPIJson = function (currentUser, author) {
-   const { favorites } = currentUser;
-   const { username, bio, image } = author;
+articleSchema.methods.toAPIJson = async function (currentUser) {
+   const {
+      _id: authorId,
+      username,
+      bio,
+      image,
+   } = await User.findById(this.author);
+
    return {
       slug: this.slug,
       title: this.title,
@@ -60,13 +67,13 @@ articleSchema.methods.toAPIJson = function (currentUser, author) {
       tagList: this.tagList,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-      favorited: favorites.includes(this._id),
+      favorited: currentUser ? currentUser.favorites.includes(this._id) : false,
       favoritesCount: this.favoritesCount,
       author: {
          username,
          bio,
          image,
-         following: currentUser.isFollowing(author._id),
+         following: currentUser && currentUser.isFollowing(authorId),
       },
    };
 };

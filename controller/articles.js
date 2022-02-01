@@ -29,22 +29,19 @@ module.exports.getAll = async (req, res) => {
  */
 module.exports.createOne = async (req, res) => {
   try {
-    const { title, description, body, tagList } = req.body.article;
+    const { article: newArticle } = req.body;
     const {
       payload: { id },
     } = req;
 
     //getting the logged in user
     const loggedInUser = await User.findById(id);
+    //Making a unique slug
+    const slug = makeSlug(`${newArticle.title} ${randomCharacters()}`);
     //creating the new article
-    const article = new Article({
-      slug: "newslug",
-      title,
-      description,
-      body,
-      tagList,
-      author: loggedInUser,
-    });
+    const article = new Article(newArticle);
+    article.slug = slug;
+    article.author = loggedInUser;
 
     const createdArticle = await article.save();
 

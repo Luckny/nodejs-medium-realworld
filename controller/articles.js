@@ -7,7 +7,21 @@ const { StatusCodes } = require("http-status-codes");
  * that the current user follows
  */
 module.exports.userFeed = async (req, res) => {
-  res.send("The current user feed");
+  try {
+    const {
+      payload: { id },
+    } = req;
+    const loggedInUser = await User.findById(id);
+    const articles = await Article.find({
+      author: { $in: loggedInUser.following },
+    }).sort({ updatedAt: -1 });
+    articleResponse(res, articles, loggedInUser);
+  } catch (e) {
+    console.log(e);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(utils.makeJsonError("Unexpected Error!"));
+  }
 };
 
 /**

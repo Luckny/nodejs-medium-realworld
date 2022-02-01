@@ -1,9 +1,6 @@
 const { Article, User } = require("../models"); //The User model.
 const utils = require("../config/utils"); //Hashing library.
 const { StatusCodes } = require("http-status-codes");
-const randomCharacters = require("unique-slug");
-const makeSlug = require("slug");
-const print = console.log.bind(console, ">");
 
 /**
  * This function gets the recent articles from the users

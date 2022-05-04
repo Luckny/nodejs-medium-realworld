@@ -63,7 +63,6 @@ articleSchema.pre("save", function (next) {
 articleSchema.methods.toAPIJson = async function (currentUser) {
   const { author } = await this.populate("author");
   const { _id: authorId, username, bio, image } = author;
-
   return {
     slug: this.slug,
     title: this.title,

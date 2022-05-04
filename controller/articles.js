@@ -75,9 +75,7 @@ module.exports.createOne = async (req, res) => {
 
     const createdArticle = await article.save();
 
-    return res
-      .status(StatusCodes.OK)
-      .json(await createdArticle.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await createdArticle.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -108,9 +106,7 @@ module.exports.getOne = async (req, res) => {
         .json(utils.makeJsonError("User Not Found!"));
     }
     //if we make it to that point, we have an article
-    return res
-      .status(StatusCodes.OK)
-      .json(await article.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await article.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -151,9 +147,7 @@ module.exports.updateOne = async (req, res) => {
     article.tagList = tagList ?? article.tagList;
     const newArticle = await article.save();
 
-    return res
-      .status(StatusCodes.OK)
-      .json(await newArticle.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await newArticle.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -220,9 +214,7 @@ module.exports.addToFavorites = async (req, res) => {
     //add the article to the logged in user favorites
     await loggedInUser.addToFavorites(article);
 
-    return res
-      .status(StatusCodes.OK)
-      .json(await article.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await article.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -253,9 +245,7 @@ module.exports.removeFromFavorites = async (req, res) => {
 
     //remove the found article from the logged in user favorites
     await loggedInUser.removeFromFavorites(article);
-    return res
-      .status(StatusCodes.OK)
-      .json(await article.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await article.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -289,9 +279,14 @@ const everyArticles = async (res, loggedInUser) => {
  */
 const byAuthor = async (res, authorUsername, loggedInUser) => {
   //find the author id
-  const { _id } = await User.findOne({ username: authorUsername });
+  const author = await User.findOne({ username: authorUsername });
+  if (!author) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json(utils.makeJsonError("Author not found"));
+  }
   //get all the articles from that author
-  const articles = await Article.find({ author: _id }).sort({ updatedAt: -1 });
+  const articles = await Article.find({ author: author._id }).sort({ updatedAt: -1 });
   articleResponse(res, articles, loggedInUser);
 };
 
@@ -303,6 +298,9 @@ const byAuthor = async (res, authorUsername, loggedInUser) => {
  */
 const byFavorites = async (res, favoritorUsername, loggedInUser) => {
   const userWhoFavorited = await User.findOne({ username: favoritorUsername });
+  if (!userWhoFavorited) {
+    return res.status(StatusCodes.NOT_FOUND).json(utils.makeJsonError("User not found"));
+  }
   const { favorites } = userWhoFavorited;
   //all the articles in the favorites array
   const articles = await Article.find({ _id: { $in: favorites } }).sort({

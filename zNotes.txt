@@ -1,0 +1,7 @@
+use createandsave everywhere
+fix the return format of article.toAPIJson
+ifFollowing should take the user not just i'ts id (better for readability)
+utils function to return errors (try catch)
+wrapasync isAuthenticated?
+delete all comments when deleting article
+test dele a comment without authorization

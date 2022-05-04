@@ -16,9 +16,12 @@ router.route('/:slug')
     .put(auth.required, articles.updateOne)
     .delete(auth.required, articles.destroyOne)
 
+//Favorite
 router.route('/:slug/favorite')
     .post(auth.required, articles.addToFavorites)
     .delete(auth.required, articles.removeFromFavorites)
+
+
 
 
 

@@ -4,9 +4,11 @@
 const userRoutes = require('./users');
 const profileRoutes = require('./profiles');
 const articleRoutes = require('./articles')
+const commentRoutes = require('./comments')
 
 module.exports = {
    userRoutes,
    profileRoutes,
-   articleRoutes
+   articleRoutes,
+   commentRoutes
 };

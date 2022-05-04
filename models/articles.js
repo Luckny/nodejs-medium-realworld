@@ -102,6 +102,14 @@ articleSchema.methods.isAuthor = async function (user) {
   return user._id.equals(this.author);
 };
 
+articleSchema.methods.deleteComment = async function (commentId) {
+  const article = this;
+  if (!article.comments.includes(commentId)) return null;
+
+  article.comments.remove(commentId);
+  return article.save();
+};
+
 //Creating the Article model
 const Article = mongoose.model("Article", articleSchema);
 

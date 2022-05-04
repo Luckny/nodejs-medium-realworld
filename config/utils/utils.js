@@ -1,6 +1,7 @@
 /*******************************************************************
  *      This file has a lot of usefull functions for the app       *
  *******************************************************************/
+const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 
 /*********************************
@@ -84,6 +85,16 @@ module.exports.makeArticlesResponse = async (articles, loggedInUser) => {
     response.push(await article.toAPIJson(loggedInUser));
   }
   return { articles: response, articlesCount: articles.length };
+};
+
+/**
+ * This function returns true if a user is logged in
+ * @param {*} req The request object
+ * @returns The true or false
+ */
+module.exports.isAuthenticated = (req) => {
+  const { payload } = req;
+  return payload && payload.id ? true : false;
 };
 
 /****************************************************

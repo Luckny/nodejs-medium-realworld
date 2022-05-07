@@ -4,7 +4,8 @@ const { userRoutes, profileRoutes, articleRoutes, commentRoutes } = require("./r
 const express = require("express");
 const mongoose = require("./config/mongoose"); //Contains the mongoose configuration
 const { urlencoded } = require("express");
-const utils = require("./config/utils");
+const { utils } = require("./config/utils");
+const { StatusCodes } = require("http-status-codes");
 const app = express();
 
 /******************************
@@ -40,7 +41,9 @@ app.use((err, req, res, next) => {
   if (err.name === "UnauthorizedError") {
     return res.status(err.status).json(utils.makeJsonError(err.message));
   }
-  return res.send("check the console");
+  return res
+    .status(err.status || StatusCodes.INTERNAL_SERVER_ERROR)
+    .json(utils.makeJsonError(err.message));
 });
 
 //Starts the Server

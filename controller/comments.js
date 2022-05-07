@@ -73,9 +73,7 @@ module.exports.destroyOne = async (req, res, next) => {
     if (!comment.isAuthor(loggedInUser)) return commentUtils.noAuthorization(res);
     await Comment.deleteOne({ _id: commentId });
     //delete the comment from the article's comment array
-    console.log(article);
     const art = await article.deleteComment(commentId);
-    console.log(art);
 
     //answer
     return res.sendStatus(StatusCodes.OK);

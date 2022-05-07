@@ -1,5 +1,5 @@
 const { Article, User } = require("../models"); //The User model.
-const utils = require("../config/utils"); //Hashing library.
+const { utils } = require("../config/utils");
 const { StatusCodes } = require("http-status-codes");
 
 /**
@@ -75,9 +75,7 @@ module.exports.createOne = async (req, res) => {
 
     const createdArticle = await article.save();
 
-    return res
-      .status(StatusCodes.OK)
-      .json(await createdArticle.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await createdArticle.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -108,9 +106,7 @@ module.exports.getOne = async (req, res) => {
         .json(utils.makeJsonError("User Not Found!"));
     }
     //if we make it to that point, we have an article
-    return res
-      .status(StatusCodes.OK)
-      .json(await article.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await article.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -151,9 +147,7 @@ module.exports.updateOne = async (req, res) => {
     article.tagList = tagList ?? article.tagList;
     const newArticle = await article.save();
 
-    return res
-      .status(StatusCodes.OK)
-      .json(await newArticle.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await newArticle.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -220,9 +214,7 @@ module.exports.addToFavorites = async (req, res) => {
     //add the article to the logged in user favorites
     await loggedInUser.addToFavorites(article);
 
-    return res
-      .status(StatusCodes.OK)
-      .json(await article.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await article.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res
@@ -253,9 +245,7 @@ module.exports.removeFromFavorites = async (req, res) => {
 
     //remove the found article from the logged in user favorites
     await loggedInUser.removeFromFavorites(article);
-    return res
-      .status(StatusCodes.OK)
-      .json(await article.toAPIJson(loggedInUser));
+    return res.status(StatusCodes.OK).json(await article.toAPIJson(loggedInUser));
   } catch (e) {
     console.log(e);
     return res

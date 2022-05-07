@@ -1,10 +1,11 @@
-process.on('warning', (e) => console.warn(e.stack));
-require('dotenv').config(); //to use .env variables
-const { userRoutes, profileRoutes, articleRoutes } = require('./routes');
-const express = require('express');
-const mongoose = require('./config/mongoose'); //Contains the mongoose configuration
-const { urlencoded } = require('express');
-const utils = require('./config/utils');
+process.on("warning", (e) => console.warn(e.stack));
+require("dotenv").config(); //to use .env variables
+const { userRoutes, profileRoutes, articleRoutes, commentRoutes } = require("./routes");
+const express = require("express");
+const mongoose = require("./config/mongoose"); //Contains the mongoose configuration
+const { urlencoded } = require("express");
+const { utils } = require("./config/utils");
+const { StatusCodes } = require("http-status-codes");
 const app = express();
 
 /******************************
@@ -20,25 +21,29 @@ app.use(express.json());
  * for the express application.
  */
 async function startServer(port) {
-   await mongoose.connectDb();
+  await mongoose.connectDb();
 
-   app.listen(port, () => {
-      console.log('Serving on port 3000');
-   });
+  app.listen(port, () => {
+    console.log("Serving on port 3000");
+  });
 }
 
 /******************************
  *          ROUTES            *
  ******************************/
-app.use('/', userRoutes);
-app.use('/profiles', profileRoutes);
-app.use('/articles', articleRoutes);
+app.use("/", userRoutes);
+app.use("/profiles", profileRoutes);
+app.use("/articles", articleRoutes);
+app.use("/articles", commentRoutes);
 
 //Error handler
 app.use((err, req, res, next) => {
-   if (err.name === 'UnauthorizedError') {
-      return res.status(err.status).json(utils.makeJsonError(err.message));
-   }
+  if (err.name === "UnauthorizedError") {
+    return res.status(err.status).json(utils.makeJsonError(err.message));
+  }
+  return res
+    .status(err.status || StatusCodes.INTERNAL_SERVER_ERROR)
+    .json(utils.makeJsonError(err.message));
 });
 
 //Starts the Server

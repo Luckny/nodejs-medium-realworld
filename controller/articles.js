@@ -1,5 +1,5 @@
 const { Article, User } = require("../models"); //The User model.
-const utils = require("../config/utils"); //Hashing library.
+const { utils } = require("../config/utils");
 const { StatusCodes } = require("http-status-codes");
 
 /**

@@ -1,6 +1,7 @@
 process.on("warning", (e) => console.warn(e.stack));
 require("dotenv").config(); //to use .env variables
 const { userRoutes, profileRoutes, articleRoutes, commentRoutes } = require("./routes");
+const tagCtrl = require("./controller/tags");
 const express = require("express");
 const mongoose = require("./config/mongoose"); //Contains the mongoose configuration
 const { urlencoded } = require("express");
@@ -35,6 +36,7 @@ app.use("/", userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/articles", articleRoutes);
 app.use("/articles", commentRoutes);
+app.use("/tags", tagCtrl.getAll);
 
 //Error handler
 app.use((err, req, res, next) => {

@@ -5,6 +5,7 @@
 const mongoose = require("mongoose");
 const randomCharacters = require("unique-slug");
 const makeSlug = require("slug");
+const Tag = require("./tags");
 const Schema = mongoose.Schema;
 //i need the user schema for author operations
 const User = require("./users");
@@ -47,10 +48,20 @@ const articleSchema = new Schema(
   { timestamps: true }
 );
 
-articleSchema.pre("save", function (next) {
+articleSchema.pre("save", async function (next) {
   const article = this;
   if (!article.isModified("title")) return next();
   article.slug = makeSlug(`${article.title} ${randomCharacters()}`);
+
+  const allTags = await Tag.find();
+  for (let tag of article.tagList) {
+    let foundTag = allTags.find((item) => item.name === tag);
+    if (!foundTag) {
+      let newTag = new Tag({ name: tag });
+      await newTag.save();
+    }
+  }
+
   next();
 });
 

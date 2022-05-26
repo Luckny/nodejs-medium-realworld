@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Luckny/nodejs-realworld-sample.git"
+    "url": "https://github.com/Luckny/nodejs-medium-realworld.git"
   },
   "author": "Luckny",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Luckny/nodejs-realworld-sample/issues"
+    "url": "https://github.com/Luckny/nodejs-medium-realworld/issues"
   },
-  "homepage": "https://github.com/Luckny/nodejs-realworld-sample#readme",
+  "homepage": "https://github.com/Luckny/nodejs-medium-realworld#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",

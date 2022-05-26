@@ -48,4 +48,4 @@ app.use((err, req, res, next) => {
 });
 
 //Starts the Server
-startServer(3000);
+startServer(process.env.SERVER_PORT);

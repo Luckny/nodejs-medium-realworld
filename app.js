@@ -1,10 +1,7 @@
-process.on("warning", (e) => console.warn(e.stack));
-require("dotenv").config(); //to use .env variables
-const { userRoutes, profileRoutes, articleRoutes, commentRoutes } = require("./routes");
-const tagCtrl = require("./controller/tags");
+process.on("warning", (e) => console.warn(e.stack)); // for debugging purposes
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("./config/mongoose"); //Contains the mongoose configuration
-const { urlencoded } = require("express");
 const { utils } = require("./config/utils");
 const { StatusCodes } = require("http-status-codes");
 const app = express();
@@ -12,7 +9,7 @@ const app = express();
 /******************************
  *  APPLICATION MIDDLEWARES   *
  ******************************/
-app.use(urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //End MiddleWares.
 
@@ -32,6 +29,8 @@ async function startServer(port) {
 /******************************
  *          ROUTES            *
  ******************************/
+const { userRoutes, profileRoutes, articleRoutes, commentRoutes } = require("./routes");
+const tagCtrl = require("./controller/tags");
 app.use("/", userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/articles", articleRoutes);

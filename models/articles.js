@@ -48,6 +48,11 @@ const articleSchema = new Schema(
   { timestamps: true }
 );
 
+/**
+ * Before saving a new document:
+ *  make a slug for the title
+ *  if it has new unknown tags, create them
+ */
 articleSchema.pre("save", async function (next) {
   const article = this;
   if (!article.isModified("title")) return next();

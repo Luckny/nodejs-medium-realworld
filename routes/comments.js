@@ -7,7 +7,6 @@ const auth = require('../config/auth');
 /******************************
  *          ROUTES            *
  ******************************/
-//Comments
 router.route('/:slug/comments')
     .get(auth.optional, comments.getAll)
     .post(auth.required, comments.createOne)
@@ -15,8 +14,4 @@ router.route('/:slug/comments')
  router.delete("/:slug/comments/:id",auth.required, comments.destroyOne)
 
 
-
-//End Routes
-
-//Export the router
 module.exports = router;

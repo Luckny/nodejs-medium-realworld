@@ -11,7 +11,5 @@ router.route('/:username/follow')
     .post(auth.required, profiles.follow)
     .delete(auth.required, profiles.unfollow)
 
-//End Routes
 
-//Export the router
 module.exports = router;

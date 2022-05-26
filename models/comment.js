@@ -26,6 +26,10 @@ const commentSchema = new Schema(
   { timestamps: true }
 );
 
+/**
+ * Before saving a comment:
+ *  find the article to which it belongs and update it
+ */
 commentSchema.pre("save", async function (next) {
   const comment = this;
   try {
@@ -38,6 +42,11 @@ commentSchema.pre("save", async function (next) {
   }
 });
 
+/**
+ * Returns true if the user recieved as parameter is the author of this article.
+ * @param {User} currentUser
+ * @returns
+ */
 commentSchema.methods.isAuthor = function (currentUser) {
   return currentUser._id.equals(this.author);
 };

@@ -13,7 +13,4 @@ router.route('/user')
     .put(auth.required, users.updateUser)
   
 
-//End Routes
-
-//Export the router
 module.exports = router;

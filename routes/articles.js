@@ -1,6 +1,6 @@
 const express = require('express');
-const articles = require('../controller/articles'); //For all the articles functions.
-const router = express.Router(); //The Router library.
+const articles = require('../controller/articles'); 
+const router = express.Router(); 
 const auth = require('../config/auth');
 
 /******************************
@@ -22,11 +22,4 @@ router.route('/:slug/favorite')
     .delete(auth.required, articles.removeFromFavorites)
 
 
-
-
-
-
-//End Routes
-
-//Export the router
 module.exports = router;

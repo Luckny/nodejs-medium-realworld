@@ -35,9 +35,12 @@ npm install
 ```
 
 Create a `.env` file based on this example:
+
+```
 `SERVER_PORT=3000`
 `DB_URI=mongodb://localhost:27017/medium`
 `JWT_SECRET=secret-key`
+```
 
 ## Running the application
 

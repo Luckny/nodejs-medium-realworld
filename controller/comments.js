@@ -55,30 +55,25 @@ module.exports.createOne = async (req, res) => {
 };
 
 module.exports.destroyOne = async (req, res, next) => {
-  try {
-    const { payload } = req;
-    const { slug, id: commentId } = req.params;
+  const { payload } = req;
+  const { slug, id: commentId } = req.params;
 
-    //getting the logged in user
-    const loggedInUser = await User.findById(payload.id);
+  //getting the logged in user
+  const loggedInUser = await User.findById(payload.id);
 
-    //get the article and return an error if you cant
-    const article = await Article.findOne({ slug });
-    if (!article) return articleUtils.articleNotFound(res);
+  //get the article and return an error if you cant
+  const article = await Article.findOne({ slug });
+  if (!article) return articleUtils.articleNotFound(res);
 
-    //get the comment and return an error if you cant
-    const comment = await Comment.findById(commentId);
-    if (!comment) return commentUtils.commentNotFound(res);
+  //get the comment and return an error if you cant
+  const comment = await Comment.findById(commentId);
+  if (!comment) return commentUtils.commentNotFound(res);
 
-    if (!comment.isAuthor(loggedInUser)) return commentUtils.noAuthorization(res);
-    await Comment.deleteOne({ _id: commentId });
-    //delete the comment from the article's comment array
-    const art = await article.deleteComment(commentId);
+  if (!comment.isAuthor(loggedInUser)) return commentUtils.noAuthorization(res);
+  await Comment.deleteOne({ _id: commentId });
+  //delete the comment from the article's comment array
+  const art = await article.deleteComment(commentId);
 
-    //answer
-    return res.sendStatus(StatusCodes.OK);
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
+  //answer
+  return res.sendStatus(StatusCodes.OK);
 };

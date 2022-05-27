@@ -2,6 +2,8 @@
 
 I created this application as a learning project demonstrating a fully fledged backend REST API built with **Node.js** including CRUD operations, authentication, routing and more.
 
+I followed the API specification and endpoints that i got form [here](https://realworld-docs.netlify.app/docs/intro)!
+
 ## Getting Started
 
 Follow instructions below to have a copy of this project up and running on your local machine for development and testing purposes.

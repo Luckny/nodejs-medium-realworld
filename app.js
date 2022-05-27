@@ -31,20 +31,25 @@ async function startServer(port) {
  ******************************/
 const { userRoutes, profileRoutes, articleRoutes, commentRoutes } = require("./routes");
 const tagCtrl = require("./controller/tags");
+const wrapAsync = require("./config/utils/wrapAsync");
 app.use("/", userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/articles", articleRoutes);
 app.use("/articles", commentRoutes);
-app.use("/tags", tagCtrl.getAll);
+app.use("/tags", wrapAsync(tagCtrl.getAll));
 
 //Error handler
 app.use((err, req, res, next) => {
+  console.log(err);
   if (err.name === "UnauthorizedError") {
     return res.status(err.status).json(utils.makeJsonError(err.message));
   }
-  return res
-    .status(err.status || StatusCodes.INTERNAL_SERVER_ERROR)
-    .json(utils.makeJsonError(err.message));
+
+  if (!err.status) {
+    err.status = StatusCodes.INTERNAL_SERVER_ERROR;
+    err.message = "Internal server error.";
+  }
+  return res.status(err.status).json(utils.makeJsonError(err.message));
 });
 
 //Starts the Server

@@ -96,10 +96,3 @@ module.exports.isAuthenticated = (req) => {
   const { payload } = req;
   return payload && payload.id ? true : false;
 };
-
-/****************************************************
- *          HELPER FUNCTIONS
- *****************************************************/
-const isMoreRecent = (date1, date2) => {
-  return date1.getTime() > date2.getTime();
-};

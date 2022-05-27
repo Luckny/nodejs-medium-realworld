@@ -1,4 +1,4 @@
-const { Article, User } = require("../models"); //The User model.
+const { Article, User, Comment } = require("../models"); //The User model.
 const utils = require("../lib/utils");
 const { StatusCodes } = require("http-status-codes");
 
@@ -143,7 +143,11 @@ module.exports.destroyOne = async (req, res) => {
       .status(StatusCodes.UNAUTHORIZED)
       .json(utils.makeJsonError("You do not have authorization!"));
 
+  //getting the comments related to the article
+  const comments = article.comments;
+
   await Article.findByIdAndDelete(article._id);
+  await Comment.deleteMany({ _id: { $in: comments } });
   return res.sendStatus(StatusCodes.OK);
 };
 

@@ -129,6 +129,15 @@ articleSchema.methods.deleteComment = async function (commentId) {
   return article.save();
 };
 
+//removing the article from the user fav list after deletion
+articleSchema.post("findOneAndDelete", async (article) => {
+  const users = await User.find({ favorites: article });
+  users.map(async (user) => {
+    user.favorites.remove(article);
+    await user.save();
+  });
+});
+
 //Creating the Article model
 const Article = mongoose.model("Article", articleSchema);
 

@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const utils = require("../config/utils/utils");
+const utils = require("../lib/utils");
 const Article = require("./articles");
 /*******************************************************************
  *      This File Defines and exports the User Schema which is

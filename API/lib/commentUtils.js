@@ -1,4 +1,4 @@
-const { Comment } = require("../../models");
+const { Comment } = require("../models");
 const utils = require("./utils");
 const { StatusCodes } = require("http-status-codes");
 

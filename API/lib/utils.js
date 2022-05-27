@@ -84,7 +84,7 @@ module.exports.makeArticlesResponse = async (articles, loggedInUser) => {
   for (let article of articles) {
     response.push(await article.toAPIJson(loggedInUser));
   }
-  return { articles: response, articlesCount: articles.length };
+  return { articles: response, articlesCount: response.length };
 };
 
 /**

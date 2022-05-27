@@ -1,8 +1,8 @@
 process.on("warning", (e) => console.warn(e.stack)); // for debugging purposes
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("./config/mongoose"); //Contains the mongoose configuration
-const { utils } = require("./config/utils");
+const mongoose = require("./API/config/mongoose"); //Contains the mongoose configuration
+const utils = require("./API/lib/utils");
 const { StatusCodes } = require("http-status-codes");
 const app = express();
 
@@ -29,9 +29,14 @@ async function startServer(port) {
 /******************************
  *          ROUTES            *
  ******************************/
-const { userRoutes, profileRoutes, articleRoutes, commentRoutes } = require("./routes");
-const tagCtrl = require("./controller/tags");
-const wrapAsync = require("./config/utils/wrapAsync");
+const {
+  userRoutes,
+  profileRoutes,
+  articleRoutes,
+  commentRoutes,
+} = require("./API/routes");
+const tagCtrl = require("./API/controller/tags");
+const wrapAsync = require("./API/lib/wrapAsync");
 app.use("/", userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/articles", articleRoutes);

@@ -1,6 +1,6 @@
 const utils = require("./utils");
 const { StatusCodes } = require("http-status-codes");
-const { Article } = require("../../models");
+const { Article } = require("../models");
 
 /**
  *This function returns a not found error

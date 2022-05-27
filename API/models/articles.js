@@ -55,15 +55,19 @@ const articleSchema = new Schema(
  */
 articleSchema.pre("save", async function (next) {
   const article = this;
-  if (!article.isModified("title")) return next();
-  article.slug = makeSlug(`${article.title} ${randomCharacters()}`);
+  //if the title was modified, make a new slug
+  if (article.isModified("title")) {
+    article.slug = makeSlug(`${article.title} ${randomCharacters()}`);
+  }
 
-  const allTags = await Tag.find();
-  for (let tag of article.tagList) {
-    let foundTag = allTags.find((item) => item.name === tag);
-    if (!foundTag) {
-      let newTag = new Tag({ name: tag });
-      await newTag.save();
+  if (article.isModified("tagList")) {
+    const allTags = await Tag.find();
+    for (let tag of article.tagList) {
+      let foundTag = allTags.find((item) => item.name === tag);
+      if (!foundTag) {
+        let newTag = new Tag({ name: tag });
+        await newTag.save();
+      }
     }
   }
 

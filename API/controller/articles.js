@@ -1,5 +1,5 @@
 const { Article, User } = require("../models"); //The User model.
-const { utils } = require("../config/utils");
+const utils = require("../lib/utils");
 const { StatusCodes } = require("http-status-codes");
 
 /**
@@ -14,7 +14,7 @@ module.exports.userFeed = async (req, res) => {
   const articles = await Article.find({
     author: { $in: loggedInUser.following },
   }).sort({ updatedAt: -1 });
-  articleResponse(res, articles, loggedInUser);
+  return articleResponse(res, articles, loggedInUser);
 };
 
 /**
@@ -79,7 +79,9 @@ module.exports.getOne = async (req, res) => {
   const article = await Article.findOne({ slug });
   //if article doesnt exist
   if (!article) {
-    return res.status(StatusCodes.NOT_FOUND).json(utils.makeJsonError("User Not Found!"));
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json(utils.makeJsonError("Article Not Found!"));
   }
   //if we make it to that point, we have an article
   return res.status(StatusCodes.OK).json(await article.toAPIJson(loggedInUser));

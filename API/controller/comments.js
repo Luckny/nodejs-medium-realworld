@@ -1,5 +1,7 @@
 const { Article, User, Comment } = require("../models");
-const { commentUtils, articleUtils, utils } = require("../config/utils");
+const commentUtils = require("../lib/commentUtils");
+const articleUtils = require("../lib/articleUtils");
+const utils = require("../lib/utils");
 const { StatusCodes } = require("http-status-codes");
 
 /**

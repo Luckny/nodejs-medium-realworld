@@ -48,9 +48,22 @@ module.exports.createOne = async (req, res) => {
 
   //getting the logged in user
   const loggedInUser = await User.findById(id);
+  const articlesByLoggedInUser = await Article.find({ author: loggedInUser });
+  if (articlesByLoggedInUser) {
+    let sametitle = false;
+    articlesByLoggedInUser.forEach((item) => {
+      if (item.title === title) {
+        sametitle = true;
+      }
+    });
+    if (sametitle)
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json(utils.makeJsonError("You already have an article with that title."));
+  }
   //creating the new article
   const article = new Article({
-    slug: "newslug",
+    slug: "temp",
     title,
     description,
     body,

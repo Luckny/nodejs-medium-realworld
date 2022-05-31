@@ -4,6 +4,18 @@ I created this application as a learning project demonstrating a fully fledged b
 
 I followed the API specification and endpoints that i got form [here](https://realworld-docs.netlify.app/docs/intro)!
 
+## Features
+
+### General functionality:
+
+- Authenticate users via JWT (login/signup pages + logout button on settings page)
+- CRU\* users (sign up & settings page - no deleting required)
+- CRUD Articles
+- CR\*D Comments on articles (no updating required)
+- GET and display paginated lists of articles
+- Favorite articles
+- Follow other users
+
 ## Getting Started
 
 Follow instructions below to have a copy of this project up and running on your local machine for development and testing purposes.

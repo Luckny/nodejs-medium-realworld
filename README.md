@@ -39,7 +39,7 @@ git clone https://github.com/Luckny/nodejs-medium-realworld.git
 Navigate into root of repository
 
 ```
-cd online-shop
+cd nodejs-medium-realworld
 ```
 
 Install application dependencies
